@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListAllMyBucketsResult>
+	<Buckets>
+		<Bucket>
+			<Name>java_sdk_bucket_test1</Name>
+			<CreationDate>2011-09-29T14:08:45.000+08:00</CreationDate>
+		</Bucket>
+		<Bucket>
+			<Name>wolegequ</Name>
+			<CreationDate>2011-08-23T16:13:22.000+08:00</CreationDate>
+		</Bucket>
+		<Bucket>
+			<Name>wolegequa</Name>
+			<CreationDate>2011-08-24T10:06:40.000+08:00</CreationDate>
+		</Bucket>
+		<Bucket>
+			<Name>wolegequaaa</Name>
+			<CreationDate>2011-10-24T13:40:45.000+08:00</CreationDate>
+		</Bucket>
+		<Bucket>
+			<Name>wolegequaaaa</Name>
+			<CreationDate>2011-10-25T18:56:50.000+08:00</CreationDate>
+		</Bucket>
+	</Buckets>
+</ListAllMyBucketsResult>
