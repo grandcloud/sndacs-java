@@ -553,6 +553,23 @@ public abstract class CSService extends RestStorageService {
 		}
 		return bucket;
 	}
+
+	public void deleteBucket(CSBucket bucket) {
+		try {
+			super.deleteBucket(bucket);
+        } catch (ServiceException e) {
+            throw new CSServiceException(e);
+        }
+	}
+	
+	@Override
+	public void deleteBucket(String bucketName) {
+		try {
+			super.deleteBucket(bucketName);
+		} catch (ServiceException e) {
+            throw new CSServiceException(e);
+        }
+	}
 	
 	/**
      * Puts an object inside an existing bucket in Cloud Storage, creating a new object or overwriting
