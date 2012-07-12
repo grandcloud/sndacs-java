@@ -1,6 +1,6 @@
 #sndacs
 
-sndacs library provides access to {SNDA Cloud Storage}[http://www.grandcloud.cn/product/ecs].
+sndacs library provides access to [SNDA Cloud Storage](http://www.grandcloud.cn/product/ecs).
 
 ## Maven dependency
 
