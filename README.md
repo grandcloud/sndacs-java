@@ -132,6 +132,53 @@ sndacs library provides access to [SNDA Cloud Storage](http://www.grandcloud.cn/
     String signedDeleteUrl = service.createSignedDeleteUrl("bucket_name",
                                                            "object_name",
                                                            expireDate);
+                                                           
+### Upload object through signed url
+
+    CSObject csObject = new CSObject("object_name", "data");
+    csObject.addMetadata("Date", expireDate);
+    String signedPutUrl = service.createSignedPutUrl("bucket_name", 
+                                                     "object_name",
+                                                     csObject.getMetadataMap(), 
+                                                     expireDate);
+    service.putObjectWithSignedUrl(signedPutUrl, csObject);
+    
+### Download object through signed url
+
+    String signedGetUrl = service.createSignedGetUrl("bucket_name",
+                                                     "object_name",
+                                                     expireDate);
+    CSObject csObject = service.getObjectWithSignedUrl(signedGetUrl);
+    
+### Get informations of object through signed url
+
+    String signedHeadUrl = service.createSignedHeadUrl("bucket_name",
+                                                       "object_name",
+                                                       expireDate);
+    CSObject csObject = service.getObjectDetailsWithSignedUrl(signedHeadUrl);
+    
+### Delete object through signed url
+
+    String signedDeleteUrl = service.createSignedDeleteUrl("bucket_name",
+                                                           "object_name",
+                                                           expireDate);
+    service.deleteObjectWithSignedUrl(signedDeleteUrl);
+    
+### Catch response error exception
+
+    String dataString = "Text for MD5 hashing...";
+    CSObject csObject = new CSObject("Testing MD5 Hashing", dataString);
+    csObject.setContentType("text/plain");
+    byte[] md5Hash = ServiceUtils.computeMD5Hash(dataString.getBytes());
+    try {
+        csObject.addMetadata("Content-MD5", "123");
+        service.putObject("testBucket", object);
+    } catch (CSServiceException e) {
+        System.out.println(e.getErrorCode() + "\n" + 
+                           e.getErrorMessage() + "\n" +
+                           e.getErrorResource() + "\n" +
+                           e.getErrorRequestId());
+    }
 
 ## Copyright
 
