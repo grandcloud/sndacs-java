@@ -527,6 +527,15 @@ public class RestCSService extends CSService {
     protected boolean getDisableDnsBuckets() {
     	return false;
     }
+    
+    /**
+     * @return
+     * If true, it will enable support for Storage Classes.
+     */
+    @Override
+    protected boolean getEnableStorageClasses() {
+        return true;
+    }
 
     /**
      * @return

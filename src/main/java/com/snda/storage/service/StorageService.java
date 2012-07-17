@@ -627,6 +627,7 @@ public abstract class StorageService {
 	protected abstract int getHttpPort();
     protected abstract int getHttpsPort();
     protected abstract boolean getDisableDnsBuckets();
+    protected abstract boolean getEnableStorageClasses();
     
     public void setHttpsOnly(boolean isHttpsOnly) {
     	this.isHttpsOnly = isHttpsOnly;

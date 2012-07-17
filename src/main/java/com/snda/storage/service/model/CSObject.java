@@ -184,6 +184,7 @@ public class CSObject extends StorageObject implements Cloneable {
         clone.dataInputStream = dataInputStream;
         clone.isMetadataComplete = isMetadataComplete;
         clone.dataInputFile = dataInputFile;
+        clone.storageClass = storageClass;
         clone.addAllMetadata(getMetadataMap());
         return clone;
     }

@@ -31,6 +31,7 @@ public class StorageObject extends BaseStorageItem implements Cloneable {
     protected transient InputStream dataInputStream = null;
     protected boolean isMetadataComplete = false;
     protected String bucketName = null;
+    protected String storageClass = null;
     
     /**
      * Store references to files when the object's data comes from a file, to allow for lazy
@@ -394,6 +395,23 @@ public class StorageObject extends BaseStorageItem implements Cloneable {
      */
     public void setKey(String key) {
         super.setName(key);
+    }
+    
+    /**
+     * @return
+     * the storage class of the object.
+     */
+    public String getStorageClass() {
+        return this.storageClass;
+    }
+
+    /**
+     * Set the storage class for this object.
+     *
+     * @param storageClass
+     */
+    public void setStorageClass(String storageClass) {
+        this.storageClass = storageClass;
     }
     
     /**

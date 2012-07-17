@@ -69,6 +69,7 @@ public abstract class RestStorageService extends StorageService implements CSReq
 	protected static enum HTTP_METHOD {PUT, POST, HEAD, GET, DELETE};
 	
 	protected HttpClient httpClient = null;
+	private String defaultStorageClass = "STANDARD";
 
 	/**
      * Constructs the service and initializes the properties.
@@ -698,7 +699,7 @@ public abstract class RestStorageService extends StorageService implements CSReq
         }
 
 		Map<String, Object> map = createObjectImpl(bucketName, null, null,
-				requestEntity, metadata, null);
+				requestEntity, metadata, null, null);
 		
 		StorageBucket bucket = newBucket();
 		bucket.setName(bucketName);
@@ -744,7 +745,7 @@ public abstract class RestStorageService extends StorageService implements CSReq
 			StorageObject object, HttpEntity requestEntity,
 			Map<String, String> requestParams) {
 		Map<String, Object> map = createObjectImpl(bucketName, object.getKey(), object.getContentType(),
-				requestEntity, object.getMetadataMap(), requestParams);
+				requestEntity, object.getMetadataMap(), requestParams, object.getStorageClass());
 		try {
             object.closeDataInputStream();
         } catch (IOException e) {
@@ -759,7 +760,7 @@ public abstract class RestStorageService extends StorageService implements CSReq
 	
 	protected Map<String, Object> createObjectImpl(String bucketName, String objectKey, String contentType,
 	        HttpEntity requestEntity, Map<String, Object> metadata,
-	        Map<String, String> requestParams) {
+	        Map<String, String> requestParams, String storageClass) {
 		
 		if (metadata == null) {
             metadata = new HashMap<String, Object>();
@@ -773,6 +774,8 @@ public abstract class RestStorageService extends StorageService implements CSReq
             metadata.put("Content-Type", Mimetypes.MIMETYPE_OCTET_STREAM);
         }
         
+        prepareStorageClass(metadata, storageClass, true, objectKey);
+        
         HttpResponse response = performRestPut(bucketName, objectKey, metadata, requestParams, requestEntity, true);
 		Map<String, Object> map = new HashMap<String, Object>();
         map.putAll(metadata); // Keep existing metadata.
@@ -785,6 +788,26 @@ public abstract class RestStorageService extends StorageService implements CSReq
         
 		return map;
 	}
+	
+	protected void prepareStorageClass(Map<String, Object> metadata, String storageClass,
+            boolean useDefaultStorageClass, String objectKey) {
+        if (metadata == null) {
+            throw new IllegalArgumentException("Null metadata not allowed.");
+        }
+        if (getEnableStorageClasses()) {
+            if (storageClass == null
+                && useDefaultStorageClass
+                && this.defaultStorageClass != null) {
+                // Apply default storage class
+                storageClass = this.defaultStorageClass;
+                log.debug("Applied default storage class '" + storageClass
+                    + "' to object '" + objectKey + "'");
+            }
+            if (storageClass != null && storageClass != "") {
+                metadata.put(this.getRestHeaderPrefix() + "storage-class", storageClass);
+            }
+        }
+    }
 	
 	@Override
 	protected void deleteObjectImpl(String bucketName, String objectKey) {
