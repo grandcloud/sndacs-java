@@ -4,7 +4,7 @@
 	<artifactId>snda-cloud-storage-java-sdk</artifactId>
 	<packaging>jar</packaging>
 	<name>SNDA Grandcloud Storage SDK for Java</name>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.2-SNAPSHOT</version>
 	<description>The SNDA Grandcloud Storage SDK for Java provides Java APIs for building software on Grandcloud Storage’ cost-effective, scalable, and reliable infrastructure products.</description>
 	<url>http://www.grandcloud.cn/product/ecs</url>
 
