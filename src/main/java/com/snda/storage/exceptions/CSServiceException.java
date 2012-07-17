@@ -80,5 +80,12 @@ public class CSServiceException extends ServiceException {
 	public String getCSErrorRequestId() {
 		return this.getErrorRequestId();
 	}
+	
+	/**
+     * @return The redirect endpoint returned by Cloud Storage, if a response is available.
+     */
+	public String getCSErrorEndpoint() {
+		return this.getErrorEndpoint();
+	}
 
 }
