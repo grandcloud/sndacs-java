@@ -178,6 +178,7 @@ sndacs library provides access to [SNDA Cloud Storage](http://www.grandcloud.cn/
                            e.getErrorMessage() + "\n" +
                            e.getErrorResource() + "\n" +
                            e.getErrorRequestId());
+    }
 
 ## Copyright
 
