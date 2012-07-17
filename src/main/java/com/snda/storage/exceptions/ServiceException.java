@@ -29,6 +29,7 @@ public class ServiceException extends RuntimeException {
     private String errorRequestId = null;
     private String errorResource = null;
     private String errorHostId = null;
+    private String errorEndpoint = null;
 	
 	private Map<String, String> responseHeaders = null;
 
@@ -119,6 +120,7 @@ public class ServiceException extends RuntimeException {
         this.errorRequestId = findXmlElementText(xmlMessage, "RequestId");
         this.errorHostId = findXmlElementText(xmlMessage, "HostId");
         this.errorResource = findXmlElementText(xmlMessage, "Resource");
+        this.errorEndpoint = findXmlElementText(xmlMessage, "Endpoint");
     }
 
 	/**
@@ -295,6 +297,21 @@ public class ServiceException extends RuntimeException {
     }
 
     /**
+     * @return The redirect endpoint returned by the service, if a response is available.
+     */
+    public String getErrorEndpoint() {
+		return errorEndpoint;
+	}
+
+    /**
+     * Set the exception's endpoint; for internal user only
+     * @param errorEndpoint
+     */
+	public void setErrorEndpoint(String errorEndpoint) {
+		this.errorEndpoint = errorEndpoint;
+	}
+
+	/**
      * @return The Error Request ID returned by the service, if a response is available.
      * Null otherwise.
      */
