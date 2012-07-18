@@ -15,9 +15,9 @@
 	</parent>
 	
 	<scm>
-		<connection>scm:svn:http://svn.sdo.com/llap/trunk/phase1/sources/llapsdk/java/</connection>
-		<developerConnection>scm:svn:http://svn.sdo.com/llap/trunk/phase1/sources/llapsdk/java/</developerConnection>
-		<url>http://svn.sdo.com/llap/trunk/phase1/sources/llapsdk/java/</url>
+		<connection>scm:svn:http://svn.sdo.com/llap/tags/snda-cloud-storage-java-sdk-1.0.1</connection>
+		<developerConnection>scm:svn:http://svn.sdo.com/llap/tags/snda-cloud-storage-java-sdk-1.0.1</developerConnection>
+		<url>http://svn.sdo.com/llap/tags/snda-cloud-storage-java-sdk-1.0.1</url>
 	</scm>
 	
 	<licenses>
