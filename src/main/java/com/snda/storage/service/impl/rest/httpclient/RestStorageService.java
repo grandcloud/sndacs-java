@@ -1,6 +1,7 @@
 package com.snda.storage.service.impl.rest.httpclient;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -49,6 +50,7 @@ import com.snda.storage.service.model.StorageObject;
 import com.snda.storage.service.utils.Mimetypes;
 import com.snda.storage.service.utils.RestUtils;
 import com.snda.storage.service.utils.ServiceUtils;
+import com.snda.storage.service.utils.XmlResponsesSaxParser.CopyObjectResultHandler;
 import com.snda.storage.service.utils.XmlResponsesSaxParser.ListBucketHandler;
 
 /**
@@ -300,7 +302,7 @@ public abstract class RestStorageService extends StorageService implements CSReq
 
 		((HttpPut) httpMethod).setEntity(requestEntity);
 
-		return performRequest(httpMethod, new int[] { 204 });
+		return performRequest(httpMethod, new int[] { 200, 204 });
 	}
 	
 	/**
@@ -366,7 +368,7 @@ public abstract class RestStorageService extends StorageService implements CSReq
 		HttpRequestBase httpMethod = setupConnection(HTTP_METHOD.DELETE,
 				bucketName, objectKey, requestParameters);
 
-		return performRequest(httpMethod, new int[] { 204 });
+		return performRequest(httpMethod, new int[] { 200, 204 });
 	}
 	
 	protected HttpResponse performRestPostWithXmlBuilder(String bucketName,
@@ -874,11 +876,13 @@ public abstract class RestStorageService extends StorageService implements CSReq
 	protected Map<String, Object> copyObjectImpl(String sourceBucketName, String sourceObjectKey,
 	        String destinationBucketName, String destinationObjectKey,
 	        Map<String, Object> destinationMetadata,
-	        String[] ifMatchTags) {
+	        String[] ifMatchTags, String destinationObjectStorageClass) {
 		Map<String, Object> metadata = new HashMap<String, Object>();
 
         String sourceKey = RestUtils.encodeUrlString(sourceBucketName + Constants.VIRGULE + sourceObjectKey);
         metadata.put(this.getRestHeaderPrefix() + "copy-source", sourceKey);
+        
+        prepareStorageClass(metadata, destinationObjectStorageClass, false, destinationObjectKey);
         
         if (destinationMetadata != null) {
             metadata.put(this.getRestHeaderPrefix() + "metadata-directive", "REPLACE");
@@ -892,22 +896,37 @@ public abstract class RestStorageService extends StorageService implements CSReq
             metadata.put(this.getRestHeaderPrefix() + "metadata-directive", "COPY");
         }
         
-        HttpResponse responseGet = performRestGet(sourceBucketName, sourceObjectKey, null, null);
-        
-		HttpResponse response = performRestPut(destinationBucketName,
-				destinationObjectKey, metadata, null, responseGet.getEntity(), false);
-        
-		Map<String, Object> map = new HashMap<String, Object>();
+        HttpResponse response = performRestPut(destinationBucketName,
+				destinationObjectKey, metadata, null, null, false);
+
+        String content = null;
+        try {
+			content = ServiceUtils.readInputStreamToString(response.getEntity().getContent(), "UTF-8").trim();
+		} catch (IOException e) {
+			log.error("Get response content error.", e);
+			throw new RuntimeException(e);
+		}
+        CopyObjectResultHandler handler = getXmlResponseSaxParser()
+            .parseCopyObjectResponse(
+                new ByteArrayInputStream(content.getBytes()));
+
+        // Release HTTP connection manually. This should already have been done by the
+        // HttpMethodReleaseInputStream class, but you can never be too sure...
+        releaseConnection(response);
+
+        if (handler.isErrorResponse()) {
+            throw new ServiceException(
+                "Copy failed: Code=" + handler.getErrorCode() +
+                ", Message=" + handler.getErrorMessage() +
+                ", RequestId=" + handler.getErrorRequestId() +
+                ", HostId=" + handler.getErrorHostId());
+        }
+
+        Map<String, Object> map = new HashMap<String, Object>();
 
         // Result fields returned when copy is successful.
-		if (response.containsHeader(Constants.REST_HEADER_LAST_MODIFIED)) {
-			map.put(Constants.REST_HEADER_LAST_MODIFIED, 
-					response.getFirstHeader(Constants.REST_HEADER_LAST_MODIFIED).getValue());
-		}
-		if (response.containsHeader(Constants.REST_HEADER_ETAG)) {
-			map.put(Constants.REST_HEADER_ETAG, 
-					response.getFirstHeader(Constants.REST_HEADER_ETAG).getValue());
-		}
+        map.put("Last-Modified", handler.getLastModified());
+        map.put("ETag", handler.getETag());
 
         // Include response headers in result map.
         map.putAll(convertHeadersToMap(response.getAllHeaders()));

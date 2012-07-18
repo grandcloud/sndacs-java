@@ -629,6 +629,93 @@ public abstract class CSService extends RestStorageService {
     }
     
     /**
+     * Copy an object. You can copy an object
+     * within a single bucket or between buckets, and can optionally update the object's
+     * metadata at the same time.
+     * <p>
+     * This method cannot be performed by anonymous services. You must have read
+     * access to the source object and write access to the destination bucket.
+     * <p>
+     * An object can be copied over itself, in which case you can update its
+     * metadata without making any other changes.
+     *
+     * @param sourceBucketName
+     * the name of bucket that contains the original object.
+     * @param sourceObjectKey
+     * the key name of the original object.
+     * @param destinationBucketName
+     * the name of the destination bucket to which the object will be copied.
+     * @param destinationObject
+     * the object that will be created by the copy operation. 
+     * @param replaceMetadata
+     * If this parameter is true, the copied object will be assigned the metadata
+     * values present in the destinationObject. Otherwise, the copied object will
+     * have the same metadata as the original object.
+     * @param ifMatchTags
+     * a precondition specifying an MD5 hash the object must match, ignored if
+     * null.
+     *
+     * @return
+     * a map of the header and result information returned by CS after the object
+     * copy. The map includes the object's MD5 hash value (ETag), its size
+     * (Content-Length), and update timestamp (Last-Modified).
+     *
+     */
+    public Map<String, Object> copyObject(String sourceBucketName,
+        String sourceObjectKey, String destinationBucketName, CSObject destinationObject,
+        boolean replaceMetadata, String[] ifMatchTags) {
+        try {
+            assertAuthenticatedConnection("copyObject");
+            Map<String, Object> destinationMetadata =
+                replaceMetadata ? destinationObject.getModifiableMetadata() : null;
+
+            return copyObjectImpl(sourceBucketName, sourceObjectKey,
+                destinationBucketName, destinationObject.getKey(),
+                destinationMetadata, ifMatchTags,
+                destinationObject.getStorageClass());
+        } catch (ServiceException se) {
+            throw new CSServiceException(se);
+        }
+    }
+
+    /**
+     * Copy an object. You can copy an object
+     * within a single bucket or between buckets, and can optionally update the object's
+     * metadata at the same time.
+     * <p>
+     * This method cannot be performed by anonymous services. You must have read
+     * access to the source object and write access to the destination bucket.
+     * <p>
+     * An object can be copied over itself, in which case you can update its
+     * metadata without making any other changes.
+     *
+     * @param sourceBucketName
+     * the name of bucket that contains the original object.
+     * @param sourceObjectKey
+     * the key name of the original object.
+     * @param destinationBucketName
+     * the name of the destination bucket to which the object will be copied.
+     * @param destinationObject
+     * the object that will be created by the copy operation.
+     * @param replaceMetadata
+     * If this parameter is true, the copied object will be assigned the metadata
+     * values present in the destinationObject. Otherwise, the copied object will
+     * have the same metadata as the original object.
+     *
+     * @return
+     * a map of the header and result information returned by CS after the object
+     * copy. The map includes the object's MD5 hash value (ETag), its size
+     * (Content-Length), and update timestamp (Last-Modified).
+     *
+     */
+    public Map<String, Object> copyVersionedObject(String versionId, String sourceBucketName,
+        String sourceObjectKey, String destinationBucketName, CSObject destinationObject,
+        boolean replaceMetadata) {
+        return copyObject(sourceBucketName, sourceObjectKey,
+            destinationBucketName, destinationObject, replaceMetadata, null);
+    }
+    
+    /**
      * Deletes an object from a bucket in Cloud Storage.
      * <p>
      * This method can be performed by anonymous services. Anonymous services

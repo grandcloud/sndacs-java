@@ -379,6 +379,12 @@ public class XmlResponsesSaxParser {
         return handler.getLocation();
 	}
 	
+	public CopyObjectResultHandler parseCopyObjectResponse(InputStream inputStream) {
+		CopyObjectResultHandler handler = new CopyObjectResultHandler();
+		parseXmlInputStream(handler, inputStream);
+		return handler;
+	}
+	
 	public MultipartUpload parseInitiateMultipartUploadResult(InputStream inputStream) {
 		MultipartUploadResultHandler handler = new MultipartUploadResultHandler(xr);
 		parseXmlInputStream(handler, sanitizeXmlDocument(handler, inputStream));
@@ -431,6 +437,79 @@ public class XmlResponsesSaxParser {
                 } else {
                     location = elementText;
                 }
+            }
+        }
+    }
+    
+    public class CopyObjectResultHandler extends DefaultXmlHandler {
+        // Data items for successful copy
+        private String etag = null;
+        private Date lastModified = null;
+
+        // Data items for failed copy
+        private String errorCode = null;
+        private String errorMessage = null;
+        private String errorRequestId = null;
+        private String errorHostId = null;
+        private boolean receivedErrorResponse = false;
+
+        public Date getLastModified() {
+            return lastModified;
+        }
+
+        public String getETag() {
+            return etag;
+        }
+
+        public String getErrorCode() {
+            return errorCode;
+        }
+
+        public String getErrorHostId() {
+            return errorHostId;
+        }
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+
+        public String getErrorRequestId() {
+            return errorRequestId;
+        }
+
+        public boolean isErrorResponse() {
+            return receivedErrorResponse;
+        }
+
+        @Override
+        public void startElement(String name) {
+            if (name.equals("CopyObjectResult")) {
+                receivedErrorResponse = false;
+            } else if (name.equals("Error")) {
+                receivedErrorResponse = true;
+            }
+        }
+
+        @Override
+        public void endElement(String name, String elementText) {
+            if (name.equals("LastModified")) {
+                try {
+                    lastModified = ServiceUtils.parseIso8601Date(elementText);
+                } catch (ParseException e) {
+                    throw new RuntimeException(
+                        "Non-ISO8601 date for LastModified in copy object output: "
+                        + elementText, e);
+                }
+            } else if (name.equals("ETag")) {
+                etag = elementText;
+            } else if (name.equals("Code")) {
+                errorCode = elementText;
+            } else if (name.equals("Message")) {
+                errorMessage = elementText;
+            } else if (name.equals("RequestId")) {
+                errorRequestId = elementText;
+            } else if (name.equals("HostId")) {
+                errorHostId = elementText;
             }
         }
     }
