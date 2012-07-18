@@ -1,0 +1,11 @@
+head:
+
+1.0.1:
+
+- Update copy object feature implement
+
+- Add reduced redundency storage class support
+
+1.0.0:
+
+- Initial public release
