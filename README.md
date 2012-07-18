@@ -38,7 +38,7 @@ sndacs library provides access to [SNDA Cloud Storage](http://www.grandcloud.cn/
 
     service.deleteBucket("bucket_name");
 
-### Upload Object from file
+### Upload object from file
 
     CSObject csObject = new CSObject(new File("filepath/file"));
     service.putObject("bucket_name", csObject);
@@ -46,6 +46,18 @@ sndacs library provides access to [SNDA Cloud Storage](http://www.grandcloud.cn/
 ### Get object informations
 
     CSObject csObject = service.headObject("bucket_name", "object_name");
+
+### Upload object as reduced redundency storage class
+
+    CSObject csObject = new CSObject(new File("filepath/file"));
+    csObject.setStorageClass("REDUCED_REDUNDANCY");
+    service.putObject("bucket_name", csObject);
+
+### Copy object
+
+    CSObject copyObject = new CSObject("copy.jpg");
+    copyObject.setContentType(Mimetypes.getInstance().getMimetype("copy.jpg"));
+    service.copyObject("source_bucket", "source_object", "dst_bucket", copyObject, true);
 
 ### Download object
 
