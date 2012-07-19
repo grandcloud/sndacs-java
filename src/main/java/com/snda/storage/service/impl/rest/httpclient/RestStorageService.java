@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -875,8 +876,9 @@ public abstract class RestStorageService extends StorageService implements CSReq
 	@Override
 	protected Map<String, Object> copyObjectImpl(String sourceBucketName, String sourceObjectKey,
 	        String destinationBucketName, String destinationObjectKey,
-	        Map<String, Object> destinationMetadata,
-	        String[] ifMatchTags, String destinationObjectStorageClass) {
+	        Map<String, Object> destinationMetadata, Calendar ifModifiedSince,
+	        Calendar ifUnmodifiedSince, String[] ifMatchTags, String[] ifNoneMatchTags,
+	        String destinationObjectStorageClass) {
 		Map<String, Object> metadata = new HashMap<String, Object>();
 
         String sourceKey = RestUtils.encodeUrlString(sourceBucketName + Constants.VIRGULE + sourceObjectKey);
@@ -894,6 +896,35 @@ public abstract class RestStorageService extends StorageService implements CSReq
             }
         } else {
             metadata.put(this.getRestHeaderPrefix() + "metadata-directive", "COPY");
+        }
+        
+        if (ifModifiedSince != null) {
+            metadata.put(this.getRestHeaderPrefix() + "copy-source-if-modified-since",
+                ServiceUtils.formatRfc822Date(ifModifiedSince.getTime()));
+            if (log.isDebugEnabled()) {
+                log.debug("Only copy object if-modified-since:" + ifModifiedSince);
+            }
+        }
+        if (ifUnmodifiedSince != null) {
+            metadata.put(this.getRestHeaderPrefix() + "copy-source-if-unmodified-since",
+                ServiceUtils.formatRfc822Date(ifUnmodifiedSince.getTime()));
+            if (log.isDebugEnabled()) {
+                log.debug("Only copy object if-unmodified-since:" + ifUnmodifiedSince);
+            }
+        }
+        if (ifMatchTags != null) {
+            String tags = ServiceUtils.join(ifMatchTags, ",");
+            metadata.put(this.getRestHeaderPrefix() + "copy-source-if-match", tags);
+            if (log.isDebugEnabled()) {
+                log.debug("Only copy object based on hash comparison if-match:" + tags);
+            }
+        }
+        if (ifNoneMatchTags != null) {
+            String tags = ServiceUtils.join(ifNoneMatchTags, ",");
+            metadata.put(this.getRestHeaderPrefix() + "copy-source-if-none-match", tags);
+            if (log.isDebugEnabled()) {
+                log.debug("Only copy object based on hash comparison if-none-match:" + tags);
+            }
         }
         
         HttpResponse response = performRestPut(destinationBucketName,

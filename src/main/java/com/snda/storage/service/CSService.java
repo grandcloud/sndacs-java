@@ -3,6 +3,7 @@ package com.snda.storage.service;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -663,7 +664,9 @@ public abstract class CSService extends RestStorageService {
      */
     public Map<String, Object> copyObject(String sourceBucketName,
         String sourceObjectKey, String destinationBucketName, CSObject destinationObject,
-        boolean replaceMetadata, String[] ifMatchTags) {
+        boolean replaceMetadata, Calendar ifModifiedSince,
+        Calendar ifUnmodifiedSince, String[] ifMatchTags,
+        String[] ifNoneMatchTags) {
         try {
             assertAuthenticatedConnection("copyObject");
             Map<String, Object> destinationMetadata =
@@ -671,8 +674,8 @@ public abstract class CSService extends RestStorageService {
 
             return copyObjectImpl(sourceBucketName, sourceObjectKey,
                 destinationBucketName, destinationObject.getKey(),
-                destinationMetadata, ifMatchTags,
-                destinationObject.getStorageClass());
+                destinationMetadata, ifModifiedSince, ifUnmodifiedSince, ifMatchTags,
+                ifNoneMatchTags, destinationObject.getStorageClass());
         } catch (ServiceException se) {
             throw new CSServiceException(se);
         }
@@ -712,7 +715,7 @@ public abstract class CSService extends RestStorageService {
         String sourceObjectKey, String destinationBucketName, CSObject destinationObject,
         boolean replaceMetadata) {
         return copyObject(sourceBucketName, sourceObjectKey,
-            destinationBucketName, destinationObject, replaceMetadata, null);
+            destinationBucketName, destinationObject, replaceMetadata, null, null, null, null);
     }
     
     /**

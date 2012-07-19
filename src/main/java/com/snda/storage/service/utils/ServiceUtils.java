@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.SimpleTimeZone;
@@ -405,6 +406,73 @@ public class ServiceUtils {
 	public static byte[] fromBase64(String b64Data) {
         byte[] decoded = Base64.decodeBase64(b64Data.getBytes());
         return decoded;
+    }
+	
+	/**
+     * Joins a list of items into a delimiter-separated string. Each item
+     * is converted to a string value with the toString() method before being
+     * added to the final delimited list.
+     *
+     * @param items
+     * the items to include in a delimited string
+     * @param delimiter
+     * the delimiter character or string to insert between each item in the list
+     * @return
+     * a delimited string
+     */
+    public static String join(List<?> items, String delimiter) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < items.size(); i++) {
+            sb.append(items.get(i).toString());
+            if (i < items.size() - 1) {
+                sb.append(delimiter);
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Joins a list of items into a delimiter-separated string. Each item
+     * is converted to a string value with the toString() method before being
+     * added to the final delimited list.
+     *
+     * @param items
+     * the items to include in a delimited string
+     * @param delimiter
+     * the delimiter character or string to insert between each item in the list
+     * @return
+     * a delimited string
+     */
+    public static String join(Object[] items, String delimiter) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < items.length; i++) {
+            sb.append(items[i]);
+            if (i < items.length - 1) {
+                sb.append(delimiter);
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Joins a list of <em>int</em>s into a delimiter-separated string.
+     *
+     * @param ints
+     * the ints to include in a delimited string
+     * @param delimiter
+     * the delimiter character or string to insert between each item in the list
+     * @return
+     * a delimited string
+     */
+    public static String join(int[] ints, String delimiter) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < ints.length; i++) {
+            sb.append(ints[i]);
+            if (i < ints.length - 1) {
+                sb.append(delimiter);
+            }
+        }
+        return sb.toString();
     }
 	
 	/**

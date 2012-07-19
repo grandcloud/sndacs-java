@@ -1,5 +1,6 @@
 package com.snda.storage.service;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -344,12 +345,14 @@ public abstract class StorageService {
 	
 	public Map<String, Object> copyObject(String sourceBucketName, String sourceObjectKey,
 	        String destinationBucketName, StorageObject destinationObject, boolean replaceMetadata,
-	        String[] ifMatchTags) {
+	        Calendar ifModifiedSince, Calendar ifUnmodifiedSince, String[] ifMatchTags,
+	        String[] ifNoneMatchTags) {
 		Map<String, Object> destinationMetadata =
             replaceMetadata ? destinationObject.getModifiableMetadata() : null;
 		return copyObjectImpl(sourceBucketName, sourceObjectKey, 
 				destinationBucketName, destinationObject.getKey(), 
-				destinationMetadata, null, destinationObject.getStorageClass());
+				destinationMetadata, ifModifiedSince, ifUnmodifiedSince, 
+				ifMatchTags, ifNoneMatchTags, destinationObject.getStorageClass());
 	}
 	
 	public Map<String, Object> copyObject(String sourceBucketName, String sourceObjectKey,
@@ -357,7 +360,7 @@ public abstract class StorageService {
 	        boolean replaceMetadata) {
 		return copyObject(sourceBucketName, sourceObjectKey, 
 				destinationBucketName, destinationObject, 
-				replaceMetadata, null);
+				replaceMetadata, null, null, null, null);
 	}
 	
 	public Map<String, Object> moveObject(String sourceBucketName,
@@ -509,8 +512,9 @@ public abstract class StorageService {
 	
 	protected abstract Map<String, Object> copyObjectImpl(String sourceBucketName, String sourceObjectKey,
 	        String destinationBucketName, String destinationObjectKey,
-	        Map<String, Object> destinationMetadata,
-	        String[] ifMatchTags, String destinationObjectStorageClass);
+	        Map<String, Object> destinationMetadata, Calendar ifModifiedSince,
+	        Calendar ifUnmodifiedSince, String[] ifMatchTags, String[] ifNoneMatchTags,
+	        String destinationObjectStorageClass);
 	
 	protected abstract void deleteObjectImpl(String bucketName, String objectKey);
 	
