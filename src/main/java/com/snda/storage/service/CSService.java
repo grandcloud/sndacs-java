@@ -711,7 +711,7 @@ public abstract class CSService extends RestStorageService {
      * (Content-Length), and update timestamp (Last-Modified).
      *
      */
-    public Map<String, Object> copyVersionedObject(String versionId, String sourceBucketName,
+    public Map<String, Object> copyObject(String versionId, String sourceBucketName,
         String sourceObjectKey, String destinationBucketName, CSObject destinationObject,
         boolean replaceMetadata) {
         return copyObject(sourceBucketName, sourceObjectKey,
