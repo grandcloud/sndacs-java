@@ -688,17 +688,22 @@ public abstract class RestStorageService extends StorageService implements CSReq
 		Map<String, Object> metadata = new HashMap<String, Object>();
 		HttpEntity requestEntity = null;
 
-		if (location != null && !Constants.CS_DEFAULT_LOCATION.equalsIgnoreCase(location)) {
-            metadata.put("Content-Type", "text/xml");
-            try {
-                CreateBucketConfiguration config = new CreateBucketConfiguration(location);
-                String configXml = config.toXml();
-                metadata.put("Content-Length", String.valueOf(configXml.length()));
-                System.out.println(configXml);
-                requestEntity = new StringEntity(configXml, "text/xml", Constants.DEFAULT_ENCODING);
-            } catch (Exception e) {
-                throw new ServiceException("Unable to encode CreateBucketConfiguration XML document", e);
-            }
+//		if (location != null /*&& !Constants.CS_DEFAULT_LOCATION.equalsIgnoreCase(location)*/) {
+//            
+//        }
+		if (location == null) {
+			location = Constants.CS_DEFAULT_LOCATION;
+		}
+		
+		metadata.put("Content-Type", "text/xml");
+        try {
+            CreateBucketConfiguration config = new CreateBucketConfiguration(location);
+            String configXml = config.toXml();
+            metadata.put("Content-Length", String.valueOf(configXml.length()));
+            System.out.println(configXml);
+            requestEntity = new StringEntity(configXml, "text/xml", Constants.DEFAULT_ENCODING);
+        } catch (Exception e) {
+            throw new ServiceException("Unable to encode CreateBucketConfiguration XML document", e);
         }
 
 		Map<String, Object> map = createObjectImpl(bucketName, null, null,

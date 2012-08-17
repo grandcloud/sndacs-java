@@ -499,7 +499,7 @@ public abstract class CSService extends RestStorageService {
     @Override
     public CSBucket getOrCreateBucket(String bucketName) {
         try {
-            return this.getOrCreateBucket(bucketName, "wuxi");
+            return this.getOrCreateBucket(bucketName, Constants.CS_DEFAULT_LOCATION);
         } catch (ServiceException e) {
             throw new CSServiceException(e);
         }

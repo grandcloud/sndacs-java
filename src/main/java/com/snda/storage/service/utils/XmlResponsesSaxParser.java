@@ -47,7 +47,9 @@ public class XmlResponsesSaxParser {
 	}
 	
 	protected StorageBucket newBucket() {
-        return new CSBucket();
+		CSBucket bucket = new CSBucket();
+		bucket.setLocation("huadong-1");
+        return bucket;
     }
 	
 	protected StorageObject newObject() {
