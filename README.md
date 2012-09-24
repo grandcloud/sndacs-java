@@ -184,7 +184,90 @@ storage.
 	update();
 ```
 
-### Multipart Upload
+## 生成预签名的URI
+盛大云存储提供了一种基于查询字串(Query String)的认证方式，即通过预签名(Presigned)的方式，为要发布的Object生成一个带有认证信息的URI，并将它分发给第三方用户来实现公开访问。
+
+SDK中提供了PresigendURIBuilder来构造预签名URI。
+```java
+URI uri = storage.presignedURIBuilder().
+	bucket("mybucket").
+	object("hello_world.mp4").
+	expires(new DateTime().plusMinutes(5))
+	builder();
+
+```
+生成的URI如下：
+```
+http://storage-huadong-1.sdcloud.cn/mybucket/hello_world.mp4?Expires=1348044780&SNDAAccessKeyId=norther&Signature=SJawXv5QdQHcFrTqnx3RpmTN9WI%3D
+```
+
+## Entity
+Entity代表要上传的Object的内容，由内容与长度组成，接口定义如下：
+```java
+public interface Entity extends InputSupplier<InputStream> {
+
+	long getContentLength();
+
+	InputStream getInput() throws IOException;
+}
+```
+***getContentLength***方法返回该Entity的长度，盛大云存储服务要求上传的数据必须事先指定其长度，最大不得超过5TB。
+
+***getInput***方法继承自[Google Guava](http://code.google.com/p/guava-libraries/)的InputSupplier。
+InputSupplier代表Entity的内容，是一个打开InputStream的回调(Callback)。在盛大云存储SDK中的不同模块之间，我们只传递InputSupplier的引用，而不是直接传递InputStream的引用。
+这是一种高效并且灵活的实用流的方式,因为应用只有在必要的时候，才会调用InputSupplier的getInput方法来打开一个新的InputStream，并保证该InputStream在使用完毕时被正确的关闭。
+
+所以常用的做法是实现匿名的InputSupplier，将打开流的回调传给SNDAObject，下面的例子是上传一个长度为65535的视频，其内容由openStream方法提供
+```java
+object.
+	bucket("mybucket").
+	object("key").
+	contentType("video/mp4").
+	entity(65535L, new InputSupplier<InputStream>() {
+		@Override
+		public InputStream getInput() throws IOException {
+			return openStream();
+		}
+	}).
+	upload();
+
+```
+盛大云存储提供了3种默认的Entity实现，包括InputSupplierEntity, InputStreamEntity,与 FileEntity
+
+下面是FileEntity的实现，供参考：
+```java
+public class FileEntity implements Entity {
+
+	private final File file;
+
+	public FileEntity(File file) {
+		this.file = checkNotNull(file);
+	}
+
+	@Override
+	public long getContentLength() {
+		return file.length();
+	}
+
+	@Override
+	public InputStream getInput() throws IOException {
+		return new FileInputStream(file);
+	}
+}
+```
+***注意*** InputStreamEntity并不关闭其持有的InputStream，需要用户自己去关闭，这样是符合IO Stream的最佳实现，即:***关闭自己打开的流***
+样例如下：
+
+
+## Bucket Policy
+
+## Exception
+
+### Multipart Upload API
+实用云存储SDK上传文件，SDK会透明的使用Multipart Upload实现对大文件上传，一般情况下用户不需要自己来实用Multipart Upload API。
+
+若开发者有自己实现Multipart Upload的需求，可以参看下面的使用样例：
+
 ```java
 InitiateMultipartUploadResult result = storage.				//初始化Multipart Upload
 	bucket("mybucket").
@@ -233,81 +316,6 @@ storage.													//列出未完成的Parts
 	listParts();
 ```
 	
-## 生成预签名的URI
-盛大云存储提供了一种基于查询字串(Query String)的认证方式，即通过预签名(Presigned)的方式，为要发布的Object生成一个带有认证信息的URI，并将它分发给第三方用户来实现公开访问。
-
-SDK中提供了PresigendURIBuilder来构造预签名URI。
-```java
-URI uri = storage.presignedURIBuilder().
-	bucket("mybucket").
-	object("hello_world.mp4").
-	expires(new DateTime().plusMinutes(5))
-	builder();
-
-```
-生成的URI如下：
-```
-http://storage-huadong-1.sdcloud.cn/mybucket/hello_world.mp4?Expires=1348044780&SNDAAccessKeyId=norther&Signature=SJawXv5QdQHcFrTqnx3RpmTN9WI%3D
-```
-
-## Entity
-Entity代表要上传的Object的内容，由内容与长度组成，接口定义如下：
-```java
-public interface Entity extends InputSupplier<InputStream> {
-
-	long getContentLength();
-
-	InputStream getInput() throws IOException;
-}
-```
-***getContentLength***方法返回该Entity的长度，盛大云存储服务要求上传的数据必须事先指定其长度，最大不得超过5TB。
-
-***getInput***方法继承自[Google Guava](http://code.google.com/p/guava-libraries/)的InputSupplier。
-InputSupplier代表Entity的内容，是一个打开InputStream的回调(Callback)。在盛大云存储SDK中，我们采用的是将回调InputSupplier的引用传递给SNDAStorage，而不是直接传递InputStream的引用。
-这是一种高效并且灵活的方式,因为SNDAStorage对象只有在必要的时候，才会调用getInput方法来打开一个新的InputStream，并保证该InputStream在使用完毕时被正确的关闭。
-
-所以常用的做法是实现匿名的InputSupplier，将打开流的回调传给SNDAObject，下面的例子是上传一个长度为65535的视频，其内容由openStream方法提供
-```java
-object.
-	bucket("mybucket").
-	object("key").
-	contentType("video/mp4").
-	entity(65535L, new InputSupplier<InputStream>() {
-		@Override
-		public InputStream getInput() throws IOException {
-			return openStream();
-		}
-	}).
-	upload();
-
-```
-
-下面是FileEntity的实现，供参考：
-```java
-public class FileEntity implements Entity {
-
-	private final File file;
-
-	public FileEntity(File file) {
-		this.file = checkNotNull(file);
-	}
-
-	@Override
-	public long getContentLength() {
-		return file.length();
-	}
-
-	@Override
-	public InputStream getInput() throws IOException {
-		return new FileInputStream(file);
-	}
-}
-```
-
-## Bucket Policy
-
-## Exception
-
 ## Copyright
 
 Copyright (c) 2012 grandcloud.cn.
