@@ -1,6 +1,6 @@
 #盛大云存储服务Java SDK
 
-[盛大云存储服务](http://www.grandcloud.cn/product/ecs)的官方提供的Java SDK，利用该工具包，开发者可以：
+[盛大云存储服务](http://www.grandcloud.cn/product/ecs)Java SDK由盛大官方提供，开发者利用该工具包可以：
 
 1. 管理Bucket信息
 2. 上传与下载Object数据
