@@ -26,7 +26,7 @@
 ## 使用
 盛大云存储服务Java SDK提供了DSL风格的API，简单易用，核心为SNDAStorage对象，开发者可通过该对象提供的各种方法来访问盛大云存储服务。
 
-### 构建SNDAStorage对象
+构建SNDAStorage对象
 
 ```java
 SNDAStorage storage = new SNDAStorageBuilder().credential(yourAccessKeyId, yourSecretAccessKey).build();
@@ -46,7 +46,7 @@ SNDAStorage对象内部维护了一组HTTP连接池，在不使用该对象时�
 storage.destory();
 ```
 
-### Bucket相关的操作
+Bucket相关的操作
 ```java
 storage.bucket("mybucket").create();			//在默认的Location节点中创建名为mybucket的Bucket
     
@@ -57,12 +57,12 @@ storage.bucket("mybucket").location().get();	//查看该Bucket的Location
 storage.bucket("mybucket").delete();			//删除该Bucket
 ```
 
-### 上传数据
+上传数据
 ```java
 storage.bucket("mybucket").object("data/upload/pic.jpg").entity(new File("d:\\user\\my_picture.jpg")).upload();
 ```
 
-### 上传数据时自定义Metadata:
+上传数据时自定义Metadata:
 ```java
 storage.bucket("mybucket").
 	object("data/upload/mydata").
@@ -75,7 +75,7 @@ storage.bucket("mybucket").
 	entity(2048L, inputStream).
 	upload();
 ```
-### 下载数据
+下载数据
 ```java
 SNDAObject object = null;
 try {
@@ -87,22 +87,22 @@ try {
 ```
 SNDAObject实现了java.io.Closeable接口，其内部持有了代表Object内容的InputStream，需要在使用完毕时正确的关闭。
 
-### 下载至本地硬盘:
+下载至本地硬盘:
 ```java
 storage.bucket("mybucket").object("data/upload/pic.jpg").download().to(new File("~/download/my_pic.jpg"));
 ```
 
-### 条件下载(Conditional GET)
+条件下载(Conditional GET)
 ```java
-storage.bucket("mybucket").object("music/norther.mp3").ifModifedSince(new DateTime(2012, 10, 7, 20, 0, 0)).download();
+storage.bucket("mybucket").object("norther.mp3").ifModifedSince(new DateTime(2012, 10, 7, 20, 0, 0)).download();
 ```
 
-### 分段下载(Range GET)
+分段下载(Range GET)
 ```java
-storage.bucket("mybucket").object("music/norther.mp3").range(1000, 5000).download();
+storage.bucket("mybucket").object("norther.mp3").range(1000, 5000).download();
 ```
 
-### 获取Metadata(HEAD Object) 
+获取Metadata(HEAD Object) 
 ```java
 SNDAObjectMetadata metadata = storage.bucket("mybucket").object("music/norther.mp3").head();
 ```
