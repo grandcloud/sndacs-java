@@ -235,7 +235,7 @@ object.
 ```
 云存储SDK提供了3种默认的Entity实现，包括InputSupplierEntity, InputStreamEntity,与 FileEntity
 
-下面是FileEntity的实现，供参考：
+参考FileEntity的实现：
 ```java
 public class FileEntity implements Entity {
 
@@ -275,10 +275,20 @@ try {
 
 ## Exception
 
-### Multipart Upload API
-实用云存储SDK上传文件，SDK会透明的使用Multipart Upload实现对大文件上传，一般情况下用户不需要自己来实用Multipart Upload API。
+## 依赖
+盛大云存储SDK依赖下面的第三方库:
 
-若开发者有自己实现Multipart Upload的需求，可以参看下面的使用样例：
+1. google-guava			Google提供的Java基础类库，提供了函数式编程，并发，集合操作等多种基础功能
+2. joda-time			一套关于时间的类库，已被收入至JDK 7中
+3. commons-codec		用来进行一些诸如Base64之类的编码算法
+4. commons-lang			用来实现一些基础的操作，例如Object hashcode与equals方法的实现
+5. http-client			Apache HttpClient 4，用来实现HTTP协议与网络数据的传输
+6. jackson				Jackson，著名的JSON格式序列化工具，只有在使用Bucket Policy时需要
+
+## Multipart Upload API
+开发这使用盛大云存储SDK上传文件时，SDK会透明的使用Multipart Upload实现对大文件上传，一般情况下用户不需要自己来使用Multipart Upload API。
+
+若开发者有自己实用Multipart Upload的需求，可以参看下面的使用样例：
 
 ```java
 InitiateMultipartUploadResult result = storage.				//初始化Multipart Upload
