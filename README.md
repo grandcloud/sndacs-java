@@ -216,15 +216,15 @@ public interface Entity extends InputSupplier<InputStream> {
 ***getInput***方法继承自[Google Guava](http://code.google.com/p/guava-libraries/)的InputSupplier。
 InputSupplier代表Entity的内容，是一个打开InputStream的回调(Callback)。
 在云存储SDK的不同模块之间，我们只传递InputSupplier的引用，而不是直接传递InputStream。
-这是一种高效并且灵活的使用流的方式，因为应用只有在必要的时候，才会调用InputSupplier的getInput方法来打开一个新的InputStream，并保证该InputStream在使用完毕时被正确的关闭。
+这是一种高效并且灵活的使用流的方式，因为只有在必要的时候，应用才会调用InputSupplier的getInput方法来打开一个新的InputStream，并保证该InputStream在使用完毕时能被正确的关闭。
 
-所以常用的做法是实现匿名的InputSupplier，将打开流的回调传给SNDAObject，下面的例子是上传一个长度为65535的视频，其内容由openStream方法提供
+下面的样例中，盛大云存储SDK只在必须要的情况下，才会调用getInput来打开流。
 ```java
 object.
 	bucket("mybucket").
 	object("key").
 	contentType("video/mp4").
-	entity(65535L, new InputSupplier<InputStream>() {
+	entity(65535, new InputSupplier<InputStream>() {
 		@Override
 		public InputStream getInput() throws IOException {
 			return openStream();
@@ -256,7 +256,8 @@ public class FileEntity implements Entity {
 	}
 }
 ```
-***注意*** InputStreamEntity并不关闭其持有的InputStream对象，这样是符合IO Stream使用的最佳实现，即：***关闭自己打开的流***。
+
+***注意*** InputStreamEntity并不关闭其持有的InputStream对象，这样的做法符合IO Stream使用的最佳实现，即：***关闭自己打开的流***。
 
 样例如下：
 ```java
