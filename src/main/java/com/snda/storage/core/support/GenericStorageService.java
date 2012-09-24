@@ -27,6 +27,10 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.io.Closeables;
 import com.google.common.net.HttpHeaders;
 import com.google.common.util.concurrent.UncheckedExecutionException;
+<<<<<<< HEAD
+=======
+import com.snda.storage.Credential;
+>>>>>>> 8f99bbbb80d00fb854a39f29aba59d5b35718d69
 import com.snda.storage.Entity;
 import com.snda.storage.Location;
 import com.snda.storage.SNDAObject;
@@ -38,7 +42,10 @@ import com.snda.storage.authorization.HmacSHA1;
 import com.snda.storage.core.Condition;
 import com.snda.storage.core.CopyObjectRequest;
 import com.snda.storage.core.CopyPartRequest;
+<<<<<<< HEAD
 import com.snda.storage.core.Credential;
+=======
+>>>>>>> 8f99bbbb80d00fb854a39f29aba59d5b35718d69
 import com.snda.storage.core.GetObjectRequest;
 import com.snda.storage.core.ListBucketCriteria;
 import com.snda.storage.core.ListMultipartUploadsCriteria;
@@ -113,7 +120,10 @@ public class GenericStorageService implements StorageService {
 				withBucket(bucket).
 				withMethod(PUT).
 				withEntity(createBucketConfiguration));
+<<<<<<< HEAD
 		locations.put(bucket, createBucketConfiguration.getLocationConstraint());
+=======
+>>>>>>> 8f99bbbb80d00fb854a39f29aba59d5b35718d69
 	}
 
 	@Override

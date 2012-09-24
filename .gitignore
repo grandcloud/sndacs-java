@@ -1,0 +1,6 @@
+*.swp
+.svn
+dir_conflicts.prej
+target
+.classpath
+.settings

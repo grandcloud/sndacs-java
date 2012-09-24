@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #盛大云存储服务Java SDK
 
 [盛大云存储服务](http://www.grandcloud.cn/product/ecs)的官方Java SDK。
@@ -81,6 +82,30 @@ SNDAStorage对象内部维护了一组HTTP连接池，在不使用该对象时�
 		contentMD5("******FAKE******").
 		contentLanguage("en");
 ```
+=======
+#sndacs
+
+sndacs library provides access to [SNDA Cloud Storage](http://www.grandcloud.cn/product/ecs).
+
+## Maven dependency
+
+    <dependency>
+      <groupId>com.snda</groupId>
+      <artifactId>snda-cloud-storage-java-sdk</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+
+## Usage
+
+### Initialize the credential
+
+    ProviderCredentials credentials = 
+                    new SNDACredentials("accessKey", "secretKey");
+
+### Initialize the storage service
+
+    CSService service = new RestCSService(credentials);
+>>>>>>> 8f99bbbb80d00fb854a39f29aba59d5b35718d69
 
 ### List buckets
 
