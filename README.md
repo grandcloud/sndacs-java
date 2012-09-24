@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-#盛大云存储服务Java SDK
-=======
-<<<<<<< HEAD
 #盛大云存储服务Java SDK
 
 [盛大云存储服务](http://www.grandcloud.cn/product/ecs)的官方Java SDK。
@@ -122,7 +118,7 @@ SNDAStorage对象内部维护了一组HTTP连接池，在不使用该对象时�
 ```java
 	SNDAStorage storage = new SNDAStorageBuilder().credential(yourAccessKeyId, yourSecretAccessKey).build();
 ```
-更多的设置：
+更多的设置:(通常来说，盛大云存储SDK已经对各项参数进行了调优，用户不需要改动过多的参数)
 ```java
 	SNDAStorage storage = new SNDAStorageBuilder().
 		credential(yourAccessKeyId, yourSecretAccessKey).
@@ -132,14 +128,11 @@ SNDAStorage对象内部维护了一组HTTP连接池，在不使用该对象时�
 		soTimeout(30 * 1000).			//设置SoTimeout为30秒
 		build();
 ```		
-通常来说，盛大云存储SDK已经对各项参数进行了调优，用户不需要改动过多的参数。
 
 SNDAStorage对象内部维护了一组HTTP连接池，在不使用该对象时，应该调用其destory方法销毁该对象，
 ```java
 	storage.destory();
 ```
-	
-***最佳实践***：一般可在Spring容器退出时，Servlet容器退出时，调用storage对象的destory方法
 
 ### Bucket相关的操作
 ```java
@@ -152,242 +145,43 @@ SNDAStorage对象内部维护了一组HTTP连接池，在不使用该对象时�
 	storage.bucket("mybucket").delete();			//删除该Bucket
 ```
 
-### 上传Object
+### 上传数据
 
-上传Object，当entity为java.io.File时，盛大云存储SDK会自动设置该Object的ContentType与ContentDisposition等信息
 ```java
-    storage.bucket("mybucket").key("data/upload/pic.jpg").entity(new File("d:\\My Picture.jpg")).upload();
+    storage.bucket("mybucket").key("data/upload/pic.jpg").entity(new File("d:\\user\\my_picture.jpg")).upload();
 ```
 
-自定义metadata:
-
+自定义Metadata:
 ```java
 	storage.bucket("mybucket").
 		key("data/upload/mydata").
 		contentType("application/octet-stream").	
-		contentMD5("******FAKE******").
+		contentMD5("ABCDEFGUVWXYZ").
 		contentLanguage("en").
 		metadata("x-snda-meta-foo", "bar").
 		metadata("x-snda-meta-creation", new DateTime().
 		metadata("x-snda-meta-author", "wangzijian@snda.com").
-		entity(2048L, new InputSupplier<InputStream>() {
-			@Override
-			public getInput() throws IOException {
-				return openStream();
-			}
-		}).
+		entity(2048L, inputStream).
 		upload();
 ```
-
-上述代码的InputSupplier来自Google的[Guava](http://code.google.com/p/guava-libraries/)，InputSupplier是一个打开InputStream的回调(Callback)，
-将InputSupplier传递给云存储SDK，云存储SDK仅在必要的时候菜会调用其getInput方法打开InputStream，并在读取之后正确的关闭该流，确保对流的高效和严谨的使用。
-
-### 上传Object
+### 下载数据
 
 ```java
 	SNDAObject object = null;
 	try {
 		object = storage.bucket("mybucket").object("data/upload/pic.jpg").download();
-		InputStream content = object.getContent();
-		read(content);
+		read(object.getContent());
 	} finally {
 		Closeables.closeQuietly(object);
 	}
-	
 ```
-download方法返回的对象SNDAObject，实现了Closeable接口，其内部只有代表Object内容的InputStream，需要在使用完毕时正确的关闭该对象。
+SNDAObject实现了java.io.Closeable接口，其内部持有了代表Object内容的InputStream，需要在使用完毕时正确的关闭。
 
-将云存储中的Object直接写入本地硬盘:
+直接下载至本地硬盘:
 ```java
-
-	storage.bucket("mybucket").object("data/upload/pic.jpg").download().to(new File("d:\\download\\my_pic.jpg"));
+	storage.bucket("mybucket").object("data/upload/pic.jpg").download().to(new File("~/download/my_pic.jpg"));
 ```
 
-
-=======
-## Usage
-
-### Initialize the credential
-
-    ProviderCredentials credentials = 
-                    new SNDACredentials("accessKey", "secretKey");
-
-### Initialize the storage service
-
-    CSService service = new RestCSService(credentials);
->>>>>>> 8f99bbbb80d00fb854a39f29aba59d5b35718d69
->>>>>>> 48a5241745a5be479d1f2ea4a1af78981a13b15d
-
-### List buckets
-
-    CSBucket[] buckets = service.listAllBuckets();
-
-### Add bucket
-
-    CSBucket csBucket = new CSBucket("bucket_name");
-    service.createBucket(bucket);
-
-### Get bucket informations
-
-    CSBucket csBucket = service.getBucket("bucket_name");
-
-### Delete bucket
-
-    service.deleteBucket("bucket_name");
-
-### Upload object from file
-
-    CSObject csObject = new CSObject(new File("filepath/file"));
-    service.putObject("bucket_name", csObject);
-
-### Get object informations
-
-    CSObject csObject = service.headObject("bucket_name", "object_name");
-
-### Upload object as reduced redundency storage class
-
-    CSObject csObject = new CSObject(new File("filepath/file"));
-    csObject.setStorageClass("REDUCED_REDUNDANCY");
-    service.putObject("bucket_name", csObject);
-
-### Copy object
-
-    CSObject copyObject = new CSObject("copy.jpg");
-    copyObject.setContentType(Mimetypes.getInstance().getMimetype("copy.jpg"));
-    service.copyObject("source_bucket", "source_object", "dst_bucket", copyObject, true);
-
-### Download object
-
-    CSObject csObject = service.getObject("bucket_name", "object_name");
-    InputStream in = csObject.getDataInputStream();
-
-### Delete object
-
-    service.deleteObject("bucket_name", "object_name");
-
-### Get the existence of object in bucket
-
-    boolean exist = service.isObjectInBucket("bucket_name", "object_name");
-
-### Get bucket, if not exist, then create
-
-    CSBucket csBucket = service.getOrCreateBucket("bucket_name");
-
-### Get bucket location
-
-    String location = service.getBucketLocation("bucket_name");
-
-### List objects
-
-    CSObject[] objects = service.listObjects("bucket_name");
-
-### Use https
-
-    service.setHttpsOnly(true);
-
-### Get bucket policy
-
-    String policyXml = service.getBucketPolicy("bucket_name");
-
-### Set bucket policy
-
-    service.setBucketPolicy("bucket_name", policyXml);
-
-### Delete bucket policy
-
-    service.deleteBucketPolicy("bucket_name");
-
-### Initialize multiupload
-
-    MultipartUpload multipart = service.multipartStartUpload("bucket_name", 
-                                                             "object_name",
-                                                             metadata);
-
-### Upload part
-
-    service.multipartUploadPart(multipart, partNumber, partObject);
-
-### List parts that have been uploaded
-
-    service.multipartListParts(multipart);
-
-### List multipart uploads that have been started within a bucket and have not yet been completed or aborted
-
-    service.multipartListUploads("bucket_name");
-
-### Complete multiupload
-
-    service.multipartCompleteUpload(multipart);
-
-### Abort multiupload
-
-    service.multipartAbortUpload(multipart);
-
-### Create signed url
-
-    String signedPutUrl = service.createSignedPutUrl("bucket_name",
-                                                     "object_name",
-                                                     headersMap,
-                                                     expireDate);
-
-    String signedGetUrl = service.createSignedGetUrl("bucket_name",
-                                                     "object_name",
-                                                     expireDate);
-
-    String signedHeadUrl = service.createSignedHeadUrl("bucket_name",
-                                                       "object_name",
-                                                       expireDate);
-
-    String signedDeleteUrl = service.createSignedDeleteUrl("bucket_name",
-                                                           "object_name",
-                                                           expireDate);
-                                                           
-### Upload object through signed url
-
-    CSObject csObject = new CSObject("object_name", "data");
-    csObject.addMetadata("Date", expireDate);
-    String signedPutUrl = service.createSignedPutUrl("bucket_name", 
-                                                     "object_name",
-                                                     csObject.getMetadataMap(), 
-                                                     expireDate);
-    service.putObjectWithSignedUrl(signedPutUrl, csObject);
-    
-### Download object through signed url
-
-    String signedGetUrl = service.createSignedGetUrl("bucket_name",
-                                                     "object_name",
-                                                     expireDate);
-    CSObject csObject = service.getObjectWithSignedUrl(signedGetUrl);
-    
-### Get informations of object through signed url
-
-    String signedHeadUrl = service.createSignedHeadUrl("bucket_name",
-                                                       "object_name",
-                                                       expireDate);
-    CSObject csObject = service.getObjectDetailsWithSignedUrl(signedHeadUrl);
-    
-### Delete object through signed url
-
-    String signedDeleteUrl = service.createSignedDeleteUrl("bucket_name",
-                                                           "object_name",
-                                                           expireDate);
-    service.deleteObjectWithSignedUrl(signedDeleteUrl);
-    
-### Catch response error exception
-
-    String dataString = "Text for MD5 hashing...";
-    CSObject csObject = new CSObject("Testing MD5 Hashing", dataString);
-    csObject.setContentType("text/plain");
-    byte[] md5Hash = ServiceUtils.computeMD5Hash(dataString.getBytes());
-    try {
-        csObject.addMetadata("Content-MD5", "123");
-        service.putObject("testBucket", object);
-    } catch (CSServiceException e) {
-        System.out.println(e.getErrorCode() + "\n" + 
-                           e.getErrorMessage() + "\n" +
-                           e.getErrorResource() + "\n" +
-                           e.getErrorRequestId());
-    }
 
 ## Copyright
 
