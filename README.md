@@ -203,7 +203,7 @@ download方法返回的对象SNDAObject，实现了Closeable接口，其内部�
 	storage.bucket("mybucket").object("data/upload/pic.jpg").download().to(new File("d:\\download\\my_pic.jpg"));
 ```
 
-<<<<<<< HEAD
+
 =======
 ## Usage
 
