@@ -1,6 +1,6 @@
 #盛大云存储服务Java SDK
 
-[盛大云存储服务](http://www.grandcloud.cn/product/ecs)Java SDK由盛大官方提供，开发者利用该工具包可以：
+[盛大云存储服务](http://www.grandcloud.cn/product/ecs)Java SDK由盛大官方提供，开发者可以利用该工具包实现：
 
 1. 管理Bucket信息
 2. 上传与下载Object数据
@@ -76,7 +76,7 @@ storage.bucket("mybucket").policy().get();			//获取Bucket Policy
 storage.bucket("mybucket").policy().delete();		//删除Bucket Policy
 
 ListBucketResult result = storage.					//根据条件列出Objects
-	bucket("mybucket")..
+	bucket("mybucket").
 	prefix("upload/").
 	delimiter("/")
 	maxKeys(25).
@@ -124,14 +124,15 @@ try {
 	Closeables.closeQuietly(object);
 }
 ```
-SNDAObject实现了java.io.Closeable接口，其内部持有了代表Object内容的InputStream，需要在使用完毕时正确的关闭。
+SNDAObject实现了java.io.Closeable接口，其内部持有了代表Object内容的InputStream，需要在使用完毕时关闭。
 
 下载至本地硬盘
 ```java
 storage.
 	bucket("mybucket").
 	object("data/upload/pic.jpg").
-	download().to(new File("~/download/my_pic.jpg"));
+	download().
+	to(new File("~/download/my_pic.jpg"));
 ```
 
 条件下载(Conditional GET)
@@ -232,6 +233,12 @@ storage.													//列出未完成的Parts
 	listParts();
 ```
 	
+## 生成预签名的URI
+	
+## Entity
+
+## Bucket Policy
+
 ## Copyright
 
 Copyright (c) 2012 grandcloud.cn.
