@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompleteMultipartUpload>
+	<Part>
+		<PartNumber>1</PartNumber>
+		<ETag>&quot;828ef3fdfa96f00ad9f27c383fc9ac7f&quot;</ETag>
+	</Part>
+	<Part>
+		<PartNumber>2</PartNumber>
+		<ETag>&quot;881f7881ac1bc144a2672e45babb8839&quot;</ETag>
+	</Part>
+</CompleteMultipartUpload>

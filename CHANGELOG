@@ -1,0 +1,20 @@
+head:
+
+1.0.1:
+
+- Update copy object feature implement
+
+- Add reduced redundency storage class support
+
+1.0.0:
+
+- Initial public release
+
+2.0.0:
+
+- 增加了DSL(Fluent Interface)风格的API
+- 增加了Access Policy Language的实现
+- 增加了Bucket Location缓存，无需指定Endpoint，支持多Region
+- 重新实现了底层的HTTP模块
+- 基于SLF4J实现更友好的日志功能
+- 减少了不必须要的第三方依赖

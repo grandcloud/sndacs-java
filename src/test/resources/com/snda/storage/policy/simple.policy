@@ -1,0 +1,20 @@
+{
+	"Id":"aaaa-bbbb-cccc-dddd",
+	"Statement" : [{
+		"Sid":"1",
+		"Effect":"Allow",
+		"Action":"*",
+		"Resource":"*",
+		"Condition" : {
+			"StringNotLike" : {
+				"snda:Referer" : "http://*.baidu.com/*"
+			},
+			"StringLike" : {
+				"snda:Referer" : ["http://www.mysite.com/*","http://mysite.com/*"]
+			},
+			"DateLessThan": {
+				"snda:CurrentTime" : "2012-07-21T14:00:00Z"
+			}
+		}
+	}]
+}

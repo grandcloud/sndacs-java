@@ -1,0 +1,11 @@
+{
+	"Id":"aaaa-bbbb-cccc-dddd",
+	"Statement" : [{
+		"Sid":"1",
+		"Effect":"Allow",
+		"Action":"*",
+		"Resource":"*",
+		"Condition" : {
+		}
+	}]
+}

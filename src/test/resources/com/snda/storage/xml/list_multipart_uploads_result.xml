@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListMultipartUploadsResult>
+	<Bucket>mybucket</Bucket>
+	<Delimiter>/</Delimiter>
+	<Prefix>my</Prefix>
+	<KeyMarker>books</KeyMarker>
+	<UploadIdMarker>ccccc</UploadIdMarker>
+	<NextKeyMarker>bash</NextKeyMarker>
+	<NextUploadIdMarker>ddddd</NextUploadIdMarker>
+	<MaxUploads>100</MaxUploads>
+	<IsTruncated>false</IsTruncated>
+	<Upload>
+		<Key>key1</Key>
+		<UploadId>ccccccccc</UploadId>
+		<Initiated>2012-10-01T19:00:35.000Z</Initiated>
+	</Upload>
+	<Upload>
+		<Key>key2</Key>
+		<UploadId>ddddddddd</UploadId>
+		<Initiated>2012-10-02T19:00:35.000Z</Initiated>
+	</Upload>
+	<CommonPrefixes>
+		<Prefix>photos/</Prefix>
+	</CommonPrefixes>
+	<CommonPrefixes>
+		<Prefix>books/</Prefix>
+	</CommonPrefixes>
+</ListMultipartUploadsResult>
