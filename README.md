@@ -5,7 +5,7 @@
 1. DSL(Fluent Interface)风格的API，简洁易用
 2. 支持Access Policy Language，通过DSL风格的API生成Bucket Policy
 3. 支持大文件上传（最大5TB），对于大文件则自动通过Multipart Upload实现上传，对开发者透明
-4. 提供了独立的签名与认证模块供开发者 使用
+4. 提供了独立的签名与认证模块供开发者使用
 5. 支持HTTPS安全网络访问
 6. 无需配置Endpoint，自动支持多盛大云存储服务的多IDC
 7. 支持限速传输
@@ -24,10 +24,7 @@
     </dependency>
 ```
 ## 使用
-盛大云存储服务Java SDK提供了DSL风格的API，简单易用，只需要两部即可访问盛大云存储服务：
-
-1 SNDAStorageBuilder构建SNDAStorage对象
-2 通过SNDAStorage对象访问云存储服务
+盛大云存储服务Java SDK提供了DSL风格的API，简单易用，核心为SNDAStorage对象，开发者可通过该对象提供的各种方法来访问盛大云存储服务。
 
 ### 构建SNDAStorage对象
 
@@ -44,6 +41,7 @@
 		soTimeout(30 * 1000).			//设置SoTimeout为30秒
 		build();
 ```		
+
 
 SNDAStorage对象内部维护了一组HTTP连接池，在不使用该对象时，应该调用其destory方法销毁该对象，
 ```java
@@ -138,6 +136,8 @@ SNDAStorage对象内部维护了一组HTTP连接池，在不使用该对象时�
 ```java
     storage.bucket("mybucket").create();			//在默认的Location节点中创建名为mybucket的Bucket
     
+    storage.bucket("mybucket").exist();				//判断名为mybucket的Bucket是否存在
+    
     storage.bucket("mybucket").location(Location.HUADONG_1).create();	//在华东一节点中创建名为mybucket的Bucket
     
     storage.bucket("mybucket").location().get();	//查看该Bucket的Location
@@ -146,12 +146,11 @@ SNDAStorage对象内部维护了一组HTTP连接池，在不使用该对象时�
 ```
 
 ### 上传数据
-
 ```java
-    storage.bucket("mybucket").key("data/upload/pic.jpg").entity(new File("d:\\user\\my_picture.jpg")).upload();
+    storage.bucket("mybucket").object("data/upload/pic.jpg").entity(new File("d:\\user\\my_picture.jpg")).upload();
 ```
 
-自定义Metadata:
+### 上传数据时自定义Metadata:
 ```java
 	storage.bucket("mybucket").
 		key("data/upload/mydata").
@@ -165,7 +164,6 @@ SNDAStorage对象内部维护了一组HTTP连接池，在不使用该对象时�
 		upload();
 ```
 ### 下载数据
-
 ```java
 	SNDAObject object = null;
 	try {
@@ -177,9 +175,24 @@ SNDAStorage对象内部维护了一组HTTP连接池，在不使用该对象时�
 ```
 SNDAObject实现了java.io.Closeable接口，其内部持有了代表Object内容的InputStream，需要在使用完毕时正确的关闭。
 
-直接下载至本地硬盘:
+### 下载至本地硬盘:
 ```java
 	storage.bucket("mybucket").object("data/upload/pic.jpg").download().to(new File("~/download/my_pic.jpg"));
+```
+
+### 条件下载(Conditional GET)
+```java
+	storage.bucket("mybucket").object("music/norther.mp3").ifModifedSince(new DateTime(2012, 10, 7, 20, 0, 0)).download();
+```
+
+### 分段下载(Range GET)
+```java
+	storage.bucket("mybucket").object("music/norther.mp3").range(1000, 5000).download();
+```
+
+### 获取Metadata(HEAD Object) 
+```java
+	SNDAObjectMetadata metadata = storage.bucket("mybucket").object("music/norther.mp3").head();
 ```
 
 
