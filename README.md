@@ -52,7 +52,7 @@ SNDAStorage对象内部维护了一组HTTP连接池，在不使用该对象时�
 ```java
 storage.destory();
 ```
-### List All Buckets
+### 列出所有的Bucket
 ```java
 for (BucketSummary each : storage.listBuckets()) {
 	String name = each.getName();
@@ -75,30 +75,35 @@ storage.bucket("mybucket").policy().get();			//获取Bucket Policy
 
 storage.bucket("mybucket").policy().delete();		//删除Bucket Policy
 
-
-ListBucketResult result = storage.
+ListBucketResult result = storage.					//根据条件列出Objects
 	bucket("mybucket")..
 	prefix("upload/").
 	delimiter("/")
 	maxKeys(25).
-	listObjects();									//根据条件列出Objects
+	listObjects();									
 	
-ListMultipartUploadsResult result = storage.
+ListMultipartUploadsResult result = storage.		//根据条件列出Multipart Uploads
 	bucket("mybucket")..
 	prefix("data/").
 	maxUploads(50).
-	listMultipartUploads();							//根据条件列出Multipart Uploads
+	listMultipartUploads();							
 ```
 
 ### Object相关的操作
 上传数据
 ```java
-storage.bucket("mybucket").object("data/upload/pic.jpg").entity(new File("d:\\user\\my_picture.jpg")).upload();
+storage.
+	bucket("mybucket").
+	object("data/upload/pic.jpg").
+	entity(new File("d:\\user\\my_picture.jpg")).
+	upload();
 ```
 
 自定义Metadata
 ```java
-storage.bucket("mybucket").object("data/upload/mydata").
+storage.
+	bucket("mybucket").
+	object("data/upload/mydata").
 	reducedRedundancy().
 	contentType("application/octet-stream").	
 	contentMD5("ABCDEFGUVWXYZ").
@@ -123,27 +128,43 @@ SNDAObject实现了java.io.Closeable接口，其内部持有了代表Object内�
 
 下载至本地硬盘
 ```java
-storage.bucket("mybucket").object("data/upload/pic.jpg").download().to(new File("~/download/my_pic.jpg"));
+storage.
+	bucket("mybucket").
+	object("data/upload/pic.jpg").
+	download().to(new File("~/download/my_pic.jpg"));
 ```
 
 条件下载(Conditional GET)
 ```java
-storage.bucket("mybucket").object("norther.mp3").ifModifedSince(new DateTime(2012, 10, 7, 20, 0, 0)).download();
+storage.
+	bucket("mybucket").
+	object("norther.mp3").
+	ifModifedSince(new DateTime(2012, 10, 7, 20, 0, 0)).
+	download();
 ```
 
 分段下载(Range GET)
 ```java
-storage.bucket("mybucket").object("norther.mp3").range(1000, 5000).download();
+storage.
+	bucket("mybucket").
+	object("norther.mp3").
+	range(1000, 5000).
+	download();
 ```
 
 获取Object信息与Metadata(HEAD Object) 
 ```java
-SNDAObjectMetadata metadata = storage.bucket("mybucket").object("music/norther.mp3").head();
+SNDAObjectMetadata metadata = storage.
+	bucket("mybucket").
+	object("music/norther.mp3").
+	head();
 ```
 
 更新Object信息与Metadata
 ```java
-storage.bucket("mybucket").object("music/norther.mp3").
+storage.
+	bucket("mybucket").
+	object("music/norther.mp3").
 	reducedRedundancy().
 	contentType("audio/mpeg").
 	metadata("x-snda-meta-nation", "Finland").
@@ -152,7 +173,9 @@ storage.bucket("mybucket").object("music/norther.mp3").
 
 复制Object
 ```java
-storage.bucket("mybucket").object("book/english.txt").
+storage.
+	bucket("mybucket").
+	object("book/english.txt").
 	copySource("otherbucket", "data/edu/main.txt");
 	replaceMetadata().
 	contentType("text/plain").
@@ -160,6 +183,55 @@ storage.bucket("mybucket").object("book/english.txt").
 	update();
 ```
 
+### Multipart Upload
+```java
+InitiateMultipartUploadResult result = storage.				//初始化Multipart Upload
+	bucket("mybucket").
+	object("blob").
+	initiateMultipartUpload();
+
+String uploadId = result.getUploadId();						//获得Multipart Upload Id
+
+storage.													//上传Part
+	bucket("mybucket").
+	object("blob").
+	multipartUpload(uploadId).
+	partNumber(1).
+	entity(new File("/user/data/bin1")).
+	upload();
+
+storage.													//复制Part
+	bucket("mybucket").
+	object("blob").
+	multipartUpload(uploadId).
+	partNumber(2).
+	copySource("otherbucket", bigdata).
+	copySourceRange(255, 65335);
+	copy();
+	
+storage.													//完成Multipart Upload
+	bucket("mybucket").
+	object("blob").
+	multipartUpload(uploadId).
+	part(1, "ETag1").;
+	part(2, "ETag2").
+	complete();
+	
+storage.													//放弃Multipart Upload
+	bucket("mybucket").
+	object("blob").
+	multipartUpload(uploadId).
+	abort();
+	
+storage.													//列出未完成的Parts
+	bucket("mybucket").
+	object("blob").
+	multipartUpload(uploadId).
+	partNumberMarker(10).
+	maxParts(5).
+	listParts();
+```
+	
 ## Copyright
 
 Copyright (c) 2012 grandcloud.cn.
