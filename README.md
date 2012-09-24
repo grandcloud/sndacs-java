@@ -4,7 +4,7 @@
 
 1. DSL(Fluent Interface)风格的API，简洁易用
 2. 支持Access Policy Language，通过DSL风格的API生成Bucket Policy
-3. 支持大文件上传（最大5TB），对于大文件则自动通过Multipart Upload实现上传，对开发者透明
+3. 支持大文件上传（最大5TB），自动通过Multipart Upload机制上传大文件，对开发者透明
 4. 提供了独立的签名与认证模块供开发者使用
 5. 支持HTTPS安全网络访问
 6. 无需配置Endpoint，自动支持多盛大云存储服务的多IDC
@@ -26,7 +26,7 @@
 ## 使用
 盛大云存储服务Java SDK提供了DSL风格的API，简单易用，核心为SNDAStorage对象，开发者可通过该对象提供的各种方法来访问盛大云存储服务。
 
-构建SNDAStorage对象
+### 构建SNDAStorage对象
 
 ```java
 SNDAStorage storage = new SNDAStorageBuilder().credential(yourAccessKeyId, yourSecretAccessKey).build();
@@ -45,27 +45,55 @@ SNDAStorage对象内部维护了一组HTTP连接池，在不使用该对象时�
 ```java
 storage.destory();
 ```
-
-Bucket相关的操作
+### List All Buckets
 ```java
-storage.bucket("mybucket").create();			//在默认的Location节点中创建名为mybucket的Bucket
+for (BucketSummary each : storage.listBuckets()) {
+	String name = each.getName();
+}
+```
+
+### Bucket相关操作
+```java
+storage.bucket("mybucket").create();				//在默认的Location节点中创建名为mybucket的Bucket
     
 storage.bucket("mybucket").location(Location.HUADONG_1).create();	//在华东一节点中创建名为mybucket的Bucket
     
-storage.bucket("mybucket").location().get();	//查看该Bucket的Location
+storage.bucket("mybucket").location().get();		//查看该Bucket的Location
 
-storage.bucket("mybucket").delete();			//删除该Bucket
+storage.bucket("mybucket").delete();				//删除该Bucket
+
+storage.bucket("mybucket").policy(myPolicy).set();	//设置新的Bucket Policy
+
+storage.bucket("mybucket").policy().get();			//获取Bucket Policy
+
+storage.bucket("mybucket").policy().delete();		//删除Bucket Policy
+
+
+ListBucketResult result = storage.
+	bucket("mybucket")..
+	prefix("upload/").
+	delimiter("/")
+	maxKeys(25).
+	listObjects();									//根据条件列出Objects
+	
+ListMultipartUploadsResult result = storage.
+	bucket("mybucket")..
+	prefix("data/").
+	maxUploads(50).
+	listMultipartUploads();							//根据条件列出Multipart Uploads
 ```
 
+### Object相关的操作
 上传数据
 ```java
 storage.bucket("mybucket").object("data/upload/pic.jpg").entity(new File("d:\\user\\my_picture.jpg")).upload();
 ```
 
-上传数据时自定义Metadata:
+自定义Metadata
 ```java
 storage.bucket("mybucket").
 	object("data/upload/mydata").
+	reducedRedundancy().
 	contentType("application/octet-stream").	
 	contentMD5("ABCDEFGUVWXYZ").
 	contentLanguage("en").
@@ -87,7 +115,7 @@ try {
 ```
 SNDAObject实现了java.io.Closeable接口，其内部持有了代表Object内容的InputStream，需要在使用完毕时正确的关闭。
 
-下载至本地硬盘:
+下载至本地硬盘
 ```java
 storage.bucket("mybucket").object("data/upload/pic.jpg").download().to(new File("~/download/my_pic.jpg"));
 ```
@@ -102,11 +130,32 @@ storage.bucket("mybucket").object("norther.mp3").ifModifedSince(new DateTime(201
 storage.bucket("mybucket").object("norther.mp3").range(1000, 5000).download();
 ```
 
-获取Metadata(HEAD Object) 
+获取Object信息与Metadata(HEAD Object) 
 ```java
 SNDAObjectMetadata metadata = storage.bucket("mybucket").object("music/norther.mp3").head();
+
+更新Object信息与Metadata
+```java
+	storage.
+	bucket("mybucket").
+	object("music/norther.mp3").
+	reducedRedundancy().
+	contentType("audio/mpeg").
+	metadata("x-snda-meta-nation", "Finland").
+	update();
 ```
 
+复制Object
+```java
+	storage.
+	bucket("mybucket").
+	object("book/english.txt").
+	copySource("otherbucket", "data/edu/main.txt");
+	replaceMetadata().
+	contentType("text/plain").
+	metadata("x-snda-meta-author", "Jack Jackson").
+	update();
+```
 
 ## Copyright
 
