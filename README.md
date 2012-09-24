@@ -325,22 +325,22 @@ storage.													//列出未完成的Parts
 ```
 
 ## Exception
-盛大云存储SDK会将云存储服务返回的Error转换成统一的异常SNDAServiceException，用户可以基于改异常类型来实现诸如错误处理，日志记录等操作
+盛大云存储SDK会将云存储服务返回的Error转换成统一的异常层次：SNDAServiceException，用户可以基于该类型来实现诸如错误处理与诊断等操作。
 
 ```java
 public class SNDAServiceException extends RuntimeException {
 
-	public int status() 				//获得错误代表的HTTP状态码(Status)
+	public int status() 			//获得错误代表的HTTP状态码(Status)
 
-	public String getRequestId()		//获得请求的唯一ID，当错误发生时，开发者可以将该ID记录下来并告知盛大云存储服务来帮助快速诊断错误
+	public String getRequestId()	//获得请求的唯一ID，当错误发生时，开发者可以将该ID记录下来并告知盛大云存储服务来快速诊断错误
 
-	public DateTime getDate()			//获得异常发生的时间
+	public DateTime getDate()		//获得异常发生的时间
 	
-	public String getCode()				//获得错误码，对应Error结构中的Code元素，当请求为head请求时，该值为null
+	public String getCode()			//获得错误码，对应Error结构中的Code元素，HEAD请求时，该值为null
 	
-	public String getResource()			//获得错误对应的资源，对应Error结构中的Resource元素，当请求为head请求时，该值为null
+	public String getResource()		//获得错误对应的资源，对应Error结构中的Resource元素，HEAD请求时，该值为null
 	
-	public String getErrorMessage()		//获得错误消息，对应Error结构中的Message元素，当请求为head请求时，该值为null
+	public String getErrorMessage()	//获得错误消息，对应Error结构中的Message元素，HEAD请求时，该值为null
 	
 }
 ```
