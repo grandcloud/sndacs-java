@@ -1,3 +1,6 @@
 *.swp
 .svn
-
+target
+.classpath
+.project
+.settings

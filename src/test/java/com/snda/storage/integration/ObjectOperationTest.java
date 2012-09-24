@@ -20,7 +20,6 @@ import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
 import com.google.common.primitives.Bytes;
-import com.snda.storage.Credential;
 import com.snda.storage.Entity;
 import com.snda.storage.SNDAObject;
 import com.snda.storage.SNDAObjectMetadata;
@@ -59,7 +58,7 @@ public class ObjectOperationTest {
 		int contentLength = 512;
 		entity = new ByteEntity(RandomStringUtils.randomAscii(contentLength).getBytes());
 		storage = new SNDAStorageBuilder().
-				credential(new Credential("BMC5QLEDM156VY5HFNS4T0STT", "MGMzMDEwNTMtZWYwYy00ZGM4LWExNWMtMWZmMjliYTllODZm")).
+				credential("BMC5QLEDM156VY5HFNS4T0STT", "MGMzMDEwNTMtZWYwYy00ZGM4LWExNWMtMWZmMjliYTllODZm").
 				https().
 				build();
 		putObject();

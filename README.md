@@ -1,25 +1,119 @@
-#sndacs
+#盛大云存储服务Java SDK
 
-sndacs library provides access to [SNDA Cloud Storage](http://www.grandcloud.cn/product/ecs).
+[盛大云存储服务](http://www.grandcloud.cn/product/ecs)的官方Java SDK。
 
-## Maven dependency
+## 特点
+1. DSL(Fluent Interface)风格的API，简洁易用
+2. 支持Access Policy Language，通过DSL风格的API生成Bucket Policy
+3. 支持大文件上传（大于5GB），对于大于5GB文件则自动通过Multipart Upload上传，对开发者透明
+4. 提供了独立的签名与认证模块
+5. 支持HTTPS安全网络访问
+6. 无需配置Endpoint，自动支持多盛大云存储服务的多IDC
+7. 支持限速传输
 
+## 下载
+
+1. [snda-cloud-storage-java-sdk-2.0.0-SNAPSHOT.jar](http://www.grandcloud.cn/product/ecs) 二进制发布包
+2. [snda-cloud-storage-java-sdk-2.0.0-SNAPSHOT.zip](http://www.grandcloud.cn/product/ecs) 包含源代码，第三方依赖，Java Doc的发布包
+
+## Maven依赖
+```xml
     <dependency>
       <groupId>com.snda</groupId>
       <artifactId>snda-cloud-storage-java-sdk</artifactId>
-      <version>1.0.0</version>
+      <version>2.0.0</version>
     </dependency>
+```
+## 使用
+盛大云存储服务Java SDK提供了DSL风格的API，简单易用，只需要两部即可访问盛大云存储服务
 
-## Usage
+### 构建SNDAStorage对象
 
-### Initialize the credential
+所有对盛大云存储服务的访问都是通过SNDAStorage对象开始，我们通过SNDAStorageBuilder来构建一个SNDAStorage：
+```java
+	SNDAStorage storage = new SNDAStorageBuilder().credential(yourAccessKeyId, yourSecretAccessKey).build();
+```
+更多的设置：
+```java
+	SNDAStorage storage = new SNDAStorageBuilder().
+		credential(yourAccessKeyId, yourSecretAccessKey).
+		https(). 						//启用HTTPS
+		bytesPerSecond(64 * 1024).		//限制每秒传输速率为64KB
+		connectionTimeout(10 * 1000).	//设置ConnectionTimeout为10秒
+		soTimeout(30 * 1000).			//设置SoTimeout为30秒
+		build();
+```		
+通常来说，盛大云存储SDK已经对各项参数进行了调优，用户不需要改动过多的参数。
 
-    ProviderCredentials credentials = 
-                    new SNDACredentials("accessKey", "secretKey");
+SNDAStorage对象内部维护了一组HTTP连接池，在不使用该对象时，应该调用其destory方法销毁该对象，
+```java
+	storage.destory();
+```
+	
+***最佳实践***：一般可在Spring容器退出时，Servlet容器退出时，调用storage对象的destory方法
 
-### Initialize the storage service
+### Bucket相关的操作
+```java
+    storage.bucket("mybucket").create();			//在默认的Location节点中创建名为mybucket的Bucket
+    
+    storage.bucket("mybucket").location(Location.HUADONG_1).create();	//在华东一节点中创建名为mybucket的Bucket
+    
+    storage.bucket("mybucket").location().get();	//查看该Bucket的Location
 
-    CSService service = new RestCSService(credentials);
+	storage.bucket("mybucket").delete();			//删除该Bucket
+```
+
+### 上传Object
+
+上传Object，当entity为java.io.File时，盛大云存储SDK会自动设置该Object的ContentType与ContentDisposition等信息
+```java
+    storage.bucket("mybucket").key("data/upload/pic.jpg").entity(new File("d:\\My Picture.jpg")).upload();
+```
+
+自定义metadata:
+
+```java
+	storage.bucket("mybucket").
+		key("data/upload/mydata").
+		contentType("application/octet-stream").	
+		contentMD5("******FAKE******").
+		contentLanguage("en").
+		metadata("x-snda-meta-foo", "bar").
+		metadata("x-snda-meta-creation", new DateTime().
+		metadata("x-snda-meta-author", "wangzijian@snda.com").
+		entity(2048L, new InputSupplier<InputStream>() {
+			@Override
+			public getInput() throws IOException {
+				return openStream();
+			}
+		}).
+		upload();
+```
+
+上述代码的InputSupplier来自Google的[Guava](http://code.google.com/p/guava-libraries/)，InputSupplier是一个打开InputStream的回调(Callback)，
+将InputSupplier传递给云存储SDK，云存储SDK仅在必要的时候菜会调用其getInput方法打开InputStream，并在读取之后正确的关闭该流，确保对流的高效和严谨的使用。
+
+### 上传Object
+
+```java
+	SNDAObject object = null;
+	try {
+		object = storage.bucket("mybucket").object("data/upload/pic.jpg").download();
+		InputStream content = object.getContent();
+		read(content);
+	} finally {
+		Closeables.closeQuietly(object);
+	}
+	
+```
+download方法返回的对象SNDAObject，实现了Closeable接口，其内部只有代表Object内容的InputStream，需要在使用完毕时正确的关闭该对象。
+
+将云存储中的Object直接写入本地硬盘:
+```java
+
+	storage.bucket("mybucket").object("data/upload/pic.jpg").download().to(new File("d:\\download\\my_pic.jpg"));
+```
+
 
 ### List buckets
 

@@ -13,6 +13,7 @@ import org.joda.time.DateTime;
 
 import com.snda.storage.authorization.Canonicalization;
 import com.snda.storage.authorization.HmacSHA1;
+import com.snda.storage.core.Credential;
 import com.snda.storage.core.ResponseOverride;
 import com.snda.storage.core.support.CanonicalizableRequestAdapter;
 import com.snda.storage.core.support.Method;
@@ -68,8 +69,8 @@ public class PresignedURIBuilder {
 		return HmacSHA1.calculate(credential.getSecretAccessKey(), stringToSign);
 	}
 
-	public PresignedURIBuilder credential(Credential credential) {
-		this.credential = credential;
+	public PresignedURIBuilder credential(String accessKeyId, String secretAccessKey) {
+		this.credential = new Credential(accessKeyId, secretAccessKey);
 		return this;
 	}
 	

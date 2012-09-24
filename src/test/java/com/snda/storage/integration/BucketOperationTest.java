@@ -1,11 +1,11 @@
 package com.snda.storage.integration;
-import static com.snda.storage.policy.fluent.impl.Conditions.*;
-import static org.junit.Assert.*;
+import static com.snda.storage.policy.fluent.impl.Conditions.currentTime;
+import static org.junit.Assert.assertEquals;
+
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.snda.storage.Credential;
 import com.snda.storage.SNDAStorage;
 import com.snda.storage.SNDAStorageBuilder;
 import com.snda.storage.policy.Policy;
@@ -41,7 +41,7 @@ public class BucketOperationTest {
 	public void setUp() {
 		bucket = "beijing";
 		storage = new SNDAStorageBuilder().
-				credential(new Credential("BMC5QLEDM156VY5HFNS4T0STT", "MGMzMDEwNTMtZWYwYy00ZGM4LWExNWMtMWZmMjliYTllODZm")).
+				credential("BMC5QLEDM156VY5HFNS4T0STT", "MGMzMDEwNTMtZWYwYy00ZGM4LWExNWMtMWZmMjliYTllODZm").
 				build();
 	}
 	
