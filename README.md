@@ -214,8 +214,9 @@ public interface Entity extends InputSupplier<InputStream> {
 ***getContentLength***方法返回该Entity的长度，盛大云存储服务要求上传的数据必须事先指定其长度，最大不得超过5TB。
 
 ***getInput***方法继承自[Google Guava](http://code.google.com/p/guava-libraries/)的InputSupplier。
-InputSupplier代表Entity的内容，是一个打开InputStream的回调(Callback)。在盛大云存储SDK中的不同模块之间，我们只传递InputSupplier的引用，而不是直接传递InputStream的引用。
-这是一种高效并且灵活的实用流的方式,因为应用只有在必要的时候，才会调用InputSupplier的getInput方法来打开一个新的InputStream，并保证该InputStream在使用完毕时被正确的关闭。
+InputSupplier代表Entity的内容，是一个打开InputStream的回调(Callback)。
+在云存储SDK的不同模块之间，我们只传递InputSupplier的引用，而不是直接传递InputStream。
+这是一种高效并且灵活的使用流的方式，因为应用只有在必要的时候，才会调用InputSupplier的getInput方法来打开一个新的InputStream，并保证该InputStream在使用完毕时被正确的关闭。
 
 所以常用的做法是实现匿名的InputSupplier，将打开流的回调传给SNDAObject，下面的例子是上传一个长度为65535的视频，其内容由openStream方法提供
 ```java
@@ -232,7 +233,7 @@ object.
 	upload();
 
 ```
-盛大云存储提供了3种默认的Entity实现，包括InputSupplierEntity, InputStreamEntity,与 FileEntity
+云存储SDK提供了3种默认的Entity实现，包括InputSupplierEntity, InputStreamEntity,与 FileEntity
 
 下面是FileEntity的实现，供参考：
 ```java
@@ -255,9 +256,19 @@ public class FileEntity implements Entity {
 	}
 }
 ```
-***注意*** InputStreamEntity并不关闭其持有的InputStream，需要用户自己去关闭，这样是符合IO Stream的最佳实现，即:***关闭自己打开的流***
-样例如下：
+***注意*** InputStreamEntity并不关闭其持有的InputStream对象，这样是符合IO Stream使用的最佳实现，即：***关闭自己打开的流***。
 
+样例如下：
+```java
+InputStream inputStream = null;
+try {
+	inputStream = openInputStream(); //用户应负责关闭自己所打开的流，盛大云存储SDK并不会关闭用户传入的InputStream对象
+	storage.bucket("mybucket").object("key").entity(256, inputStream).upload();
+} finally {
+	Closeables.closeQuietly(inputStream);
+}
+
+```
 
 ## Bucket Policy
 
