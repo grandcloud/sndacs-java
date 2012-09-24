@@ -1,14 +1,12 @@
 #盛大云存储服务Java SDK
 
-[盛大云存储服务](http://www.grandcloud.cn/product/ecs)的官方提供的Java SDK。
-
-## 盛大云存储Java SDK可以：
+[盛大云存储服务](http://www.grandcloud.cn/product/ecs)的官方提供的Java SDK，利用该工具包，开发者可以：
 1. 管理Bucket信息
 2. 上传与下载Object数据
 3. 生成与设置Bucket Policy
 4. 生成预签名(Presigned)的可公开访问的URL
 
-## 盛大云存储Java SDK的特点
+## 特点
 1. DSL(Fluent Interface)风格的API，简洁易用
 2. 支持Access Policy Language，通过DSL风格的API生成Bucket Policy
 3. 支持大文件上传（最大5TB），自动通过Multipart Upload机制上传大文件，对开发者透明
