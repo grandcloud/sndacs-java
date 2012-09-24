@@ -332,7 +332,7 @@ public class SNDAServiceException extends RuntimeException {
 
 	public int status() 			//获得错误代表的HTTP状态码(Status)
 
-	public String getRequestId()	//获得请求的唯一ID，当错误发生时，开发者可以将该ID记录下来并告知盛大云存储服务来快速诊断错误
+	public String getRequestId()	//获得请求的ID，当错误发生时，开发者可以将该ID记录下来并告知盛大云存储服务来快速诊断错误
 
 	public DateTime getDate()		//获得异常发生的时间
 	
