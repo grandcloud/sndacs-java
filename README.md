@@ -271,20 +271,6 @@ try {
 
 ```
 
-## Bucket Policy
-
-## Exception
-
-## 依赖
-盛大云存储SDK依赖下面的第三方库:
-
-1. google-guava			Google提供的Java基础类库，提供了函数式编程，并发，集合操作等多种基础功能
-2. joda-time			一套关于时间的类库，已被收入至JDK 7中
-3. commons-codec		用来进行一些诸如Base64之类的编码算法
-4. commons-lang			用来实现一些基础的操作，例如Object hashcode与equals方法的实现
-5. http-client			Apache HttpClient 4，用来实现HTTP协议与网络数据的传输
-6. jackson				Jackson，著名的JSON格式序列化工具，只有在使用Bucket Policy时需要
-
 ## Multipart Upload API
 开发这使用盛大云存储SDK上传文件时，SDK会透明的使用Multipart Upload实现对大文件上传，一般情况下用户不需要自己来使用Multipart Upload API。
 
@@ -337,7 +323,51 @@ storage.													//列出未完成的Parts
 	maxParts(5).
 	listParts();
 ```
+
+## Exception
+盛大云存储SDK会将云存储服务返回的Error转换成统一的异常SNDAServiceException，用户可以基于改异常类型来实现诸如错误处理，日志记录等操作
+
+```java
+public class SNDAServiceException extends RuntimeException {
+
+	public int status() 				//获得错误代表的HTTP状态码(Status)
+
+	public String getRequestId()		//获得请求的唯一ID，当错误发生时，开发者可以将该ID记录下来并告知盛大云存储服务来帮助快速诊断错误
+
+	public DateTime getDate()			//获得异常发生的时间
 	
+	public String getCode()				//获得错误码，对应Error结构中的Code元素，当请求为head请求时，该值为null
+	
+	public String getResource()			//获得错误对应的资源，对应Error结构中的Resource元素，当请求为head请求时，该值为null
+	
+	public String getErrorMessage()		//获得错误消息，对应Error结构中的Message元素，当请求为head请求时，该值为null
+	
+}
+```
+
+除了标准的错误信息外，用户还可以获得额外的错误信息：
+```java
+
+try {
+	doSomething();
+} catch (SNDAServiceException e) {
+	if ("SignatureDoesNotMatch".equals(e.getCode()) {
+		String signatureProvided = e.getError().get("SignatureProvided");
+	}
+}
+
+```
+
+## 依赖
+盛大云存储SDK依赖以下的第三方库:
+
+1. google-guava			Google提供的Java基础类库，提供了函数式编程，并发，集合操作等多种基础功能
+2. joda-time			一套关于时间的类库，已被收入至JDK 7中
+3. commons-codec		用来进行一些诸如Base64之类的编码算法
+4. commons-lang			用来实现一些基础的操作，例如Object hashcode与equals方法的实现
+5. http-client			Apache HttpClient 4，用来实现HTTP协议与网络数据的传输
+6. jackson				Jackson，著名的JSON格式序列化工具，只有在使用Bucket Policy时需要
+
 ## Copyright
 
 Copyright (c) 2012 grandcloud.cn.
