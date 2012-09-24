@@ -83,7 +83,7 @@ ListBucketResult result = storage.					//根据条件列出Objects
 	listObjects();									
 	
 ListMultipartUploadsResult result = storage.		//根据条件列出Multipart Uploads
-	bucket("mybucket")..
+	bucket("mybucket").
 	prefix("data/").
 	maxUploads(50).
 	listMultipartUploads();							
@@ -214,7 +214,7 @@ storage.													//完成Multipart Upload
 	bucket("mybucket").
 	object("blob").
 	multipartUpload(uploadId).
-	part(1, "ETag1").;
+	part(1, "ETag1").
 	part(2, "ETag2").
 	complete();
 	
@@ -234,10 +234,79 @@ storage.													//列出未完成的Parts
 ```
 	
 ## 生成预签名的URI
-	
+盛大云存储提供了一种基于查询字串(Query String)的认证方式，即通过预签名(Presigned)的方式，为要发布的Object生成一个带有认证信息的URI，并将它分发给第三方用户来实现公开访问。
+
+SDK中提供了PresigendURIBuilder来构造预签名URI。
+```java
+URI uri = storage.presignedURIBuilder().
+	bucket("mybucket").
+	object("hello_world.mp4").
+	expires(new DateTime().plusMinutes(5))
+	builder();
+
+```
+生成的URI如下：
+```
+http://storage-huadong-1.sdcloud.cn/mybucket/hello_world.mp4?Expires=1348044780&SNDAAccessKeyId=norther&Signature=SJawXv5QdQHcFrTqnx3RpmTN9WI%3D
+```
+
 ## Entity
+Entity代表要上传的Object的内容，由内容与长度组成，接口定义如下：
+```java
+public interface Entity extends InputSupplier<InputStream> {
+
+	long getContentLength();
+
+	InputStream getInput() throws IOException;
+}
+```
+***getContentLength***方法返回该Entity的长度，盛大云存储服务要求上传的数据必须事先指定其长度，最大不得超过5TB。
+
+***getInput***方法继承自[Google Guava](http://code.google.com/p/guava-libraries/)的InputSupplier。
+InputSupplier代表Entity的内容，是一个打开InputStream的回调(Callback)。在盛大云存储SDK中，我们采用的是将回调InputSupplier的引用传递给SNDAStorage，而不是直接传递InputStream的引用。
+这是一种高效并且灵活的方式,因为SNDAStorage对象只有在必要的时候，才会调用getInput方法来打开一个新的InputStream，并保证该InputStream在使用完毕时被正确的关闭。
+
+所以常用的做法是实现匿名的InputSupplier，将打开流的回调传给SNDAObject，下面的例子是上传一个长度为65535的视频，其内容由openStream方法提供
+```java
+object.
+	bucket("mybucket").
+	object("key").
+	contentType("video/mp4").
+	entity(65535L, new InputSupplier<InputStream>() {
+		@Override
+		public InputStream getInput() throws IOException {
+			return openStream();
+		}
+	}).
+	upload();
+
+```
+
+下面是FileEntity的实现，供参考：
+```java
+public class FileEntity implements Entity {
+
+	private final File file;
+
+	public FileEntity(File file) {
+		this.file = checkNotNull(file);
+	}
+
+	@Override
+	public long getContentLength() {
+		return file.length();
+	}
+
+	@Override
+	public InputStream getInput() throws IOException {
+		return new FileInputStream(file);
+	}
+}
+```
 
 ## Bucket Policy
+
+## Exception
 
 ## Copyright
 

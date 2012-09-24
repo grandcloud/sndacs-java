@@ -12,10 +12,10 @@ import org.apache.http.params.HttpParams;
 
 import com.google.common.util.concurrent.RateLimiter;
 import com.snda.storage.core.Credential;
+import com.snda.storage.core.StorageService;
 import com.snda.storage.core.support.GenericStorageService;
 import com.snda.storage.fluent.FluentBucket;
-import com.snda.storage.fluent.FluentService;
-import com.snda.storage.fluent.impl.FluentServiceImpl;
+import com.snda.storage.fluent.impl.FluentBucketImpl;
 import com.snda.storage.httpclient.HttpClientInvoker;
 import com.snda.storage.httpclient.LogInterceptor;
 import com.snda.storage.httpclient.RateLimitInterceptor;
@@ -45,17 +45,22 @@ public class SNDAStorageBuilder {
 
 	public SNDAStorage build() {
 		final HttpClient httpClient = buildHttpClient();
-		final FluentService fluentService = buildFluentService(httpClient);
+		final StorageService storageService = buildStorageService(httpClient);
 		return new SNDAStorage() {
 
 			@Override
 			public ListAllMyBucketsResult listBuckets() {
-				return fluentService.listBuckets();
+				return storageService.listBuckets();
 			}
 
 			@Override
 			public FluentBucket bucket(String name) {
-				return fluentService.bucket(name);
+				return new FluentBucketImpl(storageService, name);
+			}
+
+			@Override
+			public PresignedURIBuilder presignedURIBuilder() {
+				return new PresignedURIBuilder(storageService);
 			}
 
 			@Override
@@ -65,7 +70,7 @@ public class SNDAStorageBuilder {
 		};
 	}
 
-	private FluentService buildFluentService(HttpClient httpClient) {
+	protected StorageService buildStorageService(HttpClient httpClient) {
 		GenericStorageService storageService = new GenericStorageService(new HttpClientInvoker(httpClient));
 		if (credential != null) {
 			storageService.setCredential(credential);
@@ -73,10 +78,10 @@ public class SNDAStorageBuilder {
 		if (https != null) {
 			storageService.setHttps(https);
 		}
-		return new FluentServiceImpl(storageService);
+		return storageService;
 	}
 
-	private DefaultHttpClient buildHttpClient() {
+	protected DefaultHttpClient buildHttpClient() {
 		HttpParams params = new BasicHttpParams();
 		params.setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, connectionTimeout);
 		params.setParameter(CoreConnectionPNames.SO_TIMEOUT, soTimeout);

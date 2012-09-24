@@ -80,4 +80,8 @@ public interface StorageService {
 	CompleteMultipartUploadResult completeMultipartUpload(String bucket, String key, String uploadId, List<Part> parts);
 
 	void abortMultipartUpload(String bucket, String key, String uploadId);
+
+	void setCredential(Credential credential);
+
+	Credential getCredential();
 }

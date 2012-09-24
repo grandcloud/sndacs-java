@@ -15,10 +15,10 @@ import com.snda.storage.authorization.Canonicalization;
 import com.snda.storage.authorization.HmacSHA1;
 import com.snda.storage.core.Credential;
 import com.snda.storage.core.ResponseOverride;
+import com.snda.storage.core.StorageService;
 import com.snda.storage.core.support.CanonicalizableRequestAdapter;
 import com.snda.storage.core.support.Method;
 import com.snda.storage.core.support.Request;
-
 /**
  * 
  * @author wangzijian@snda.com
@@ -30,24 +30,27 @@ public class PresignedURIBuilder {
 	private static final String SIGNATURE = "Signature";
 	private static final String EXPIRES = "Expires";
 	
+	private final StorageService storageService;
+	
+	public PresignedURIBuilder(StorageService storageService) {
+		this.storageService = checkNotNull(storageService);
+	}
+
 	private Method method = Method.GET;
-	private Location location = Location.PREFERRED;
-	private Credential credential;
 	private String bucket;
 	private String key;
 	private DateTime expires;
 	private ResponseOverride responseOverride = new ResponseOverride();
 	
 	public URI build() {
-		checkNotNull(method, "method");
-		checkNotNull(location, "location");
-		checkNotNull(credential, "credential");
-		checkNotNull(bucket, "bucket");
-		checkNotNull(key, "key");
-		checkNotNull(expires, "expires");
+		checkRequired(method, "method");
+		checkRequired(bucket, "bucket");
+		checkRequired(key, "key");
+		checkRequired(expires, "expires");
+		Credential credential = checkRequired(storageService.getCredential(), "credential ");
 		Request request = new Request().
 			withMethod(method).
-			withEndpoint(location.getPublicEndpoint()).
+			withEndpoint(getLocation(bucket).getPublicEndpoint()).
 			withBucket(bucket).
 			withKey(key).
 			withParameter(RESPONSE_CONTENT_TYPE, responseOverride.getContentType()).
@@ -64,23 +67,21 @@ public class PresignedURIBuilder {
 			buildURI();
 	}
 	
+	private static <T> T checkRequired(T object, String name) {
+		return checkNotNull(object, "%s is required");
+	}
+
+	private Location getLocation(String bucket) {
+		return storageService.getBucketLocation(bucket);
+	}
+
 	private String sign(Request request, Credential credential) {
 		String stringToSign = Canonicalization.canonicalize(new CanonicalizableRequestAdapter(request));
 		return HmacSHA1.calculate(credential.getSecretAccessKey(), stringToSign);
 	}
 
-	public PresignedURIBuilder credential(String accessKeyId, String secretAccessKey) {
-		this.credential = new Credential(accessKeyId, secretAccessKey);
-		return this;
-	}
-	
 	public PresignedURIBuilder method(Method method) {
 		this.method = method;
-		return this;
-	}
-	
-	public PresignedURIBuilder location(Location location) {
-		this.location = location;
 		return this;
 	}
 	

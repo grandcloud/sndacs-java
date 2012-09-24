@@ -24,7 +24,7 @@ import com.snda.storage.xml.ListMultipartUploadsResult;
  * @author wangzijian@snda.com
  * 
  */
-class FluentBucketImpl implements FluentBucket {
+public class FluentBucketImpl implements FluentBucket {
 
 	private final StorageService storageService;
 	private final String bucket;

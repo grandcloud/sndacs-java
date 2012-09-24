@@ -1,5 +1,6 @@
 package com.snda.storage;
 import static org.junit.Assert.assertSame;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -10,7 +11,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.InputSupplier;
@@ -32,15 +35,14 @@ import com.snda.storage.core.UploadObjectResult;
 import com.snda.storage.core.UploadPartRequest;
 import com.snda.storage.core.UploadPartResult;
 import com.snda.storage.core.support.InputSupplierEntity;
-import com.snda.storage.fluent.FluentService;
-import com.snda.storage.fluent.impl.FluentServiceImpl;
+import com.snda.storage.fluent.FluentBucket;
+import com.snda.storage.fluent.impl.FluentBucketImpl;
 import com.snda.storage.policy.Policy;
 import com.snda.storage.xml.CompleteMultipartUploadResult;
 import com.snda.storage.xml.CopyObjectResult;
 import com.snda.storage.xml.CopyPartResult;
 import com.snda.storage.xml.CreateBucketConfiguration;
 import com.snda.storage.xml.InitiateMultipartUploadResult;
-import com.snda.storage.xml.ListAllMyBucketsResult;
 import com.snda.storage.xml.ListBucketResult;
 import com.snda.storage.xml.ListMultipartUploadsResult;
 import com.snda.storage.xml.ListPartsResult;
@@ -54,58 +56,50 @@ import com.snda.storage.xml.Part;
 @RunWith(MockitoJUnitRunner.class)
 public class DSLTest {
 
-	private FluentService service;
+	@Mock
+	private SNDAStorage storage;
 	
 	@Mock
-	private StorageService client;
-	
-	@Test
-	public void listBuckets() {
-		ListAllMyBucketsResult expected = mock(ListAllMyBucketsResult.class);
-		when(client.listBuckets()).thenReturn(expected);
-		
-		ListAllMyBucketsResult actual = service.listBuckets();
-		assertSame(expected, actual);
-	}
+	private StorageService storageService;
 	
 	@Test
 	public void createBucketWithDefaultLocation() {
-		service.bucket("mybucket").create();
+		storage.bucket("mybucket").create();
 		
-		verify(client).createBucket("mybucket");
+		verify(storageService).createBucket("mybucket");
 	}
 
 	@Test
 	public void createBucketWithSpecifiedLocation() {
-		service.bucket("mybucket").location(Location.HUADONG_1).create();
+		storage.bucket("mybucket").location(Location.HUADONG_1).create();
 		
-		verify(client).createBucket("mybucket", new CreateBucketConfiguration(Location.HUADONG_1));
+		verify(storageService).createBucket("mybucket", new CreateBucketConfiguration(Location.HUADONG_1));
 	}
 	
 	@Test
 	public void getBucketLocation() {
-		when(client.getBucketLocation("mybucket")).thenReturn(Location.HUABEI_1);
+		when(storageService.getBucketLocation("mybucket")).thenReturn(Location.HUABEI_1);
 		
-		Location actual = service.bucket("mybucket").location().get();
+		Location actual = storage.bucket("mybucket").location().get();
 		assertSame(Location.HUABEI_1, actual);
 	}
 	
 	@Test
 	public void listObjects() {
 		ListBucketResult expected = mock(ListBucketResult.class);
-		when(client.listObjects("mybucket", new ListBucketCriteria())).thenReturn(expected);
+		when(storageService.listObjects("mybucket", new ListBucketCriteria())).thenReturn(expected);
 	
-		ListBucketResult actual = service.bucket("mybucket").listObjects();
+		ListBucketResult actual = storage.bucket("mybucket").listObjects();
 		assertSame(expected, actual);
 	}
 	
 	@Test
 	public void listObjectsWithCommonParameters() {
 		ListBucketResult expected = mock(ListBucketResult.class);
-		when(client.listObjects("mybucket", new ListBucketCriteria().
+		when(storageService.listObjects("mybucket", new ListBucketCriteria().
 				withPrefix("books"))).thenReturn(expected);
 		
-		ListBucketResult actual = service.
+		ListBucketResult actual = storage.
 				bucket("mybucket").
 				prefix("books").
 				listObjects();
@@ -115,12 +109,12 @@ public class DSLTest {
 	@Test
 	public void listObjectsWithSpecifiedParameters() {
 		ListBucketResult expected = mock(ListBucketResult.class);
-		when(client.listObjects("mybucket", new ListBucketCriteria().
+		when(storageService.listObjects("mybucket", new ListBucketCriteria().
 				withPrefix("books").
 				withDelimiter("/").
 				withMarker("books/m"))).thenReturn(expected);
 		
-		ListBucketResult actual = service.
+		ListBucketResult actual = storage.
 				bucket("mybucket").
 				prefix("books").
 				delimiter("/").
@@ -132,10 +126,10 @@ public class DSLTest {
 	@Test
 	public void listMultipartUploads() {
 		ListMultipartUploadsResult expected = mock(ListMultipartUploadsResult.class);
-		when(client.listMultipartUploads("mybucket", new ListMultipartUploadsCriteria())).
+		when(storageService.listMultipartUploads("mybucket", new ListMultipartUploadsCriteria())).
 			thenReturn(expected);
 		
-		ListMultipartUploadsResult actual = service.bucket("mybucket").listMultipartUploads();
+		ListMultipartUploadsResult actual = storage.bucket("mybucket").listMultipartUploads();
 		assertSame(expected, actual);
 		
 	}
@@ -143,10 +137,10 @@ public class DSLTest {
 	@Test
 	public void listMultipartUploadsWithCommonParameters() {
 		ListMultipartUploadsResult expected = mock(ListMultipartUploadsResult.class);
-		when(client.listMultipartUploads("mybucket", new ListMultipartUploadsCriteria().
+		when(storageService.listMultipartUploads("mybucket", new ListMultipartUploadsCriteria().
 				withDelimiter("/"))).thenReturn(expected);
 		
-		ListMultipartUploadsResult actual = service.
+		ListMultipartUploadsResult actual = storage.
 				bucket("mybucket").
 				delimiter("/").
 				listMultipartUploads();
@@ -156,11 +150,11 @@ public class DSLTest {
 	@Test
 	public void listMultipartUploadsWithSpecifiedParameters() {
 		ListMultipartUploadsResult expected = mock(ListMultipartUploadsResult.class);
-		when(client.listMultipartUploads("mybucket", new ListMultipartUploadsCriteria().
+		when(storageService.listMultipartUploads("mybucket", new ListMultipartUploadsCriteria().
 				withDelimiter("/").
 				withUploadIdMarker("ABCDEFG"))).thenReturn(expected);
 		
-		ListMultipartUploadsResult actual = service.
+		ListMultipartUploadsResult actual = storage.
 				bucket("mybucket").
 				uploadIdMarker("ABCDEFG").
 				delimiter("/").
@@ -172,32 +166,32 @@ public class DSLTest {
 	public void setBucketPolicy() {
 		Policy policy = mock(Policy.class);
 		
-		service.bucket("mybucket").policy(policy).set();
-		verify(client).setBucketPolicy("mybucket", policy);
+		storage.bucket("mybucket").policy(policy).set();
+		verify(storageService).setBucketPolicy("mybucket", policy);
 	}
 	
 	@Test
 	public void getBucketPolicy() {
 		Policy expected = mock(Policy.class);
-		when(client.getBucketPolicy("mybucket")).thenReturn(expected);
+		when(storageService.getBucketPolicy("mybucket")).thenReturn(expected);
 		
-		Policy actual = service.bucket("mybucket").policy().get();
+		Policy actual = storage.bucket("mybucket").policy().get();
 		assertSame(expected, actual);
 	}
 	
 	@Test
 	public void deleteBucketPolicy() {
-		service.bucket("mybucket").policy().delete();
+		storage.bucket("mybucket").policy().delete();
 		
-		verify(client).deleteBucketPolicy("mybucket");
+		verify(storageService).deleteBucketPolicy("mybucket");
 	}
 	
 	@Test
 	public void downloadObject() {
 		SNDAObject expected = mock(SNDAObject.class);
-		when(client.downloadObject("mybucket", "key", new GetObjectRequest())).thenReturn(expected);
+		when(storageService.downloadObject("mybucket", "key", new GetObjectRequest())).thenReturn(expected);
 		
-		SNDAObject actual = service.
+		SNDAObject actual = storage.
 				bucket("mybucket").
 				object("key").
 				download();
@@ -207,10 +201,10 @@ public class DSLTest {
 	@Test
 	public void downloadObjectWithRange() {
 		SNDAObject expected = mock(SNDAObject.class);
-		when(client.downloadObject("mybucket", "key", new GetObjectRequest().
+		when(storageService.downloadObject("mybucket", "key", new GetObjectRequest().
 				withRange(new Range(1, 50)))).thenReturn(expected);
 		
-		SNDAObject actual = service.
+		SNDAObject actual = storage.
 				bucket("mybucket").
 				object("key").
 				range(1, 50).
@@ -221,10 +215,10 @@ public class DSLTest {
 	@Test
 	public void downloadObjectWithCondition() {
 		SNDAObject expected = mock(SNDAObject.class);
-		when(client.downloadObject("mybucket", "key", new GetObjectRequest().
+		when(storageService.downloadObject("mybucket", "key", new GetObjectRequest().
 				withCondition(new Condition().withIfMatch("abc")))).thenReturn(expected);
 		
-		SNDAObject actual = service.
+		SNDAObject actual = storage.
 				bucket("mybucket").
 				object("key").
 				ifMatch("abc").
@@ -235,11 +229,11 @@ public class DSLTest {
 	@Test
 	public void downloadObjectWithResponseOverrided() {
 		SNDAObject expected = mock(SNDAObject.class);
-		when(client.downloadObject("mybucket", "key", new GetObjectRequest().
+		when(storageService.downloadObject("mybucket", "key", new GetObjectRequest().
 				withResponseOverride(new ResponseOverride().withCacheControl("private")))).
 				thenReturn(expected);
 		
-		SNDAObject actual = service.
+		SNDAObject actual = storage.
 				bucket("mybucket").
 				object("key").
 				responseCacheControl("private").
@@ -250,9 +244,9 @@ public class DSLTest {
 	@Test
 	public void headObject() {
 		SNDAObjectMetadata expected = mock(SNDAObjectMetadata.class);
-		when(client.headObject("mybucket", "key", new GetObjectRequest())).thenReturn(expected);
+		when(storageService.headObject("mybucket", "key", new GetObjectRequest())).thenReturn(expected);
 		
-		SNDAObjectMetadata actual = service.
+		SNDAObjectMetadata actual = storage.
 				bucket("mybucket").
 				object("key").
 				head();
@@ -262,10 +256,10 @@ public class DSLTest {
 	@Test
 	public void headObjectWithRange() {
 		SNDAObjectMetadata expected = mock(SNDAObjectMetadata.class);
-		when(client.headObject("mybucket", "key", new GetObjectRequest().
+		when(storageService.headObject("mybucket", "key", new GetObjectRequest().
 				withRange(new Range(1000)))).thenReturn(expected);
 		
-		SNDAObjectMetadata actual = service.
+		SNDAObjectMetadata actual = storage.
 				bucket("mybucket").
 				object("key").
 				range(1000).
@@ -279,7 +273,7 @@ public class DSLTest {
 		long contentLength = 1234L;
 		InputSupplier<InputStream> inputSupplier = mock(InputSupplier.class);
 		UploadObjectResult expected = mock(UploadObjectResult.class);
-		when(client.uploadObject("mybucket", "key", new UploadObjectRequest().
+		when(storageService.uploadObject("mybucket", "key", new UploadObjectRequest().
 				withContentMD5("YnBlWPwiOhfPiILrdrYcFg==").
 				withObjectCreation(new ObjectCreation().
 						withCacheControl("private").
@@ -292,7 +286,7 @@ public class DSLTest {
 				)).thenReturn(expected);
 		
 		
-		UploadObjectResult actual = service.
+		UploadObjectResult actual = storage.
 			bucket("mybucket").
 			object("key").
 			cacheControl("private").
@@ -309,7 +303,7 @@ public class DSLTest {
 	
 	@Test
 	public void updateObject() {
-		service.
+		storage.
 			bucket("mybucket").
 			object("key").
 			cacheControl("public").
@@ -317,7 +311,7 @@ public class DSLTest {
 			reducedRedundancy().
 			update();
 		
-		verify(client).copyObject(
+		verify(storageService).copyObject(
 				"mybucket", 
 				"key", 
 				new CopyObjectRequest().
@@ -332,7 +326,7 @@ public class DSLTest {
 	@Test
 	public void copyObject() {
 		CopyObjectResult expected = mock(CopyObjectResult.class);
-		when(client.copyObject("mybucket", "key", new CopyObjectRequest().
+		when(storageService.copyObject("mybucket", "key", new CopyObjectRequest().
 				withCopySource(new CopySource("mybucket2", "other")).
 				withMetadataDirective(MetadataDirective.REPLACE).
 				withCopyCondition(new Condition().
@@ -342,7 +336,7 @@ public class DSLTest {
 						withContentType("video/mpeg").
 						withStorageClass(StorageClass.REDUCED_REDUNDANCY)))).thenReturn(expected);
 		
-		CopyObjectResult actual = service.
+		CopyObjectResult actual = storage.
 			bucket("mybucket").
 			object("key").
 			cacheControl("private").
@@ -357,20 +351,20 @@ public class DSLTest {
 	
 	@Test
 	public void deleteObject() {
-		service.bucket("mybucket").object("key").delete();
+		storage.bucket("mybucket").object("key").delete();
 		
-		verify(client).deleteObject("mybucket", "key");
+		verify(storageService).deleteObject("mybucket", "key");
 	}
 	
 	@Test
 	public void initiateMultipartUpload() {
 		InitiateMultipartUploadResult expected = mock(InitiateMultipartUploadResult.class);
-		when(client.initiateMultipartUpload("mybucket", "key", new ObjectCreation().
+		when(storageService.initiateMultipartUpload("mybucket", "key", new ObjectCreation().
 				withMetadata("x-snda-meta-name1", "value1").
 				withMetadata("x-snda-meta-name2", "value2").
 				withContentType("application/xml"))).thenReturn(expected);
 		
-		InitiateMultipartUploadResult actual = service.
+		InitiateMultipartUploadResult actual = storage.
 				bucket("mybucket").
 				object("key").
 				contentType("application/xml").
@@ -383,7 +377,7 @@ public class DSLTest {
 	@Test
 	public void completeMultipart() {
 		CompleteMultipartUploadResult result = mock(CompleteMultipartUploadResult.class);
-		when(client.completeMultipartUpload(
+		when(storageService.completeMultipartUpload(
 				"mybucket", 
 				"key", 
 				"1234567890", 
@@ -391,7 +385,7 @@ public class DSLTest {
 				new Part(1, "etag1"),
 				new Part(2, "etag2"),
 				new Part(3, "etag3")))).thenReturn(result);
-		CompleteMultipartUploadResult actual = service.
+		CompleteMultipartUploadResult actual = storage.
 				bucket("mybucket").
 				object("key").
 				multipartUpload("1234567890").
@@ -405,10 +399,10 @@ public class DSLTest {
 	@Test
 	public void listParts() {
 		ListPartsResult expected = mock(ListPartsResult.class);
-		when(client.listParts("mybucket", "key", "ABCDEFG", new ListPartsCriteria())).
+		when(storageService.listParts("mybucket", "key", "ABCDEFG", new ListPartsCriteria())).
 			thenReturn(expected);
 		
-		ListPartsResult actual = service.
+		ListPartsResult actual = storage.
 				bucket("mybucket").
 				object("key").
 				multipartUpload("ABCDEFG").
@@ -420,12 +414,12 @@ public class DSLTest {
 	@Test
 	public void listPartsWithParameter() {
 		ListPartsResult expected = mock(ListPartsResult.class);
-		when(client.listParts("mybucket", "key", "ABCDEFG", new ListPartsCriteria().
+		when(storageService.listParts("mybucket", "key", "ABCDEFG", new ListPartsCriteria().
 				withMaxParts(500).
 				withPartNumberMarker(999))).
 			thenReturn(expected);
 		
-		ListPartsResult actual = service.
+		ListPartsResult actual = storage.
 				bucket("mybucket").
 				object("key").
 				multipartUpload("ABCDEFG").
@@ -437,12 +431,12 @@ public class DSLTest {
 	
 	@Test
 	public void abortMultipartUpload() {
-		service.
+		storage.
 			bucket("mybucket").
 			object("key").
 			multipartUpload("ABCDEFG").
 			abort();
-		verify(client).abortMultipartUpload("mybucket", "key", "ABCDEFG");
+		verify(storageService).abortMultipartUpload("mybucket", "key", "ABCDEFG");
 	}
 	
 	@Test
@@ -450,11 +444,11 @@ public class DSLTest {
 	public void uploadPart() {
 		InputSupplier<InputStream> inputSupplier = mock(InputSupplier.class);
 		UploadPartResult expected = mock(UploadPartResult.class);
-		when(client.uploadPart("mybucket", "key", "ABCDEFG", 213, new UploadPartRequest().
+		when(storageService.uploadPart("mybucket", "key", "ABCDEFG", 213, new UploadPartRequest().
 				withEntity(new InputSupplierEntity(255L, inputSupplier)))).
 			thenReturn(expected);
 		
-		UploadPartResult actual = service.
+		UploadPartResult actual = storage.
 				bucket("mybucket").
 				object("key").
 				multipartUpload("ABCDEFG").
@@ -467,11 +461,11 @@ public class DSLTest {
 	@Test
 	public void copyPart() {
 	 	CopyPartResult expected = mock(CopyPartResult.class);
-		when(client.copyPart("mybucket", "key", "ABCDEFG", 213, new CopyPartRequest().
+		when(storageService.copyPart("mybucket", "key", "ABCDEFG", 213, new CopyPartRequest().
 				withCopySource(new CopySource("mybucket2", "222")))).
 			thenReturn(expected);
 		
-		CopyPartResult actual = service.
+		CopyPartResult actual = storage.
 				bucket("mybucket").
 				object("key").
 				multipartUpload("ABCDEFG").
@@ -483,6 +477,11 @@ public class DSLTest {
 	
 	@Before
 	public void setUp() {
-		this.service = new FluentServiceImpl(client);
+		when(storage.bucket(any(String.class))).thenAnswer(new Answer<FluentBucket>() {
+			@Override
+			public FluentBucket answer(InvocationOnMock invocation) throws Throwable {
+				return new FluentBucketImpl(storageService, (String) invocation.getArguments()[0]);
+			}
+		});
 	}
 }

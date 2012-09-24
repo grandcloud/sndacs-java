@@ -495,7 +495,13 @@ public class GenericStorageService implements StorageService {
 		this.scheme = https ? Scheme.HTTPS : Scheme.HTTP;
 	}
 
+	@Override
 	public void setCredential(Credential credential) {
 		this.credential = credential;
+	}
+
+	@Override
+	public Credential getCredential() {
+		return credential;
 	}
 }

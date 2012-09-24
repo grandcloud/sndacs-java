@@ -1,14 +1,22 @@
 package com.snda.storage;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.snda.storage.core.Credential;
+import com.snda.storage.core.StorageService;
 
 
 /**
@@ -16,17 +24,19 @@ import org.slf4j.LoggerFactory;
  * @author wangzijian@snda.com
  * 
  */
+@RunWith(MockitoJUnitRunner.class)
 public class PresignedURIBuilderTest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PresignedURIBuilderTest.class);
 	
 	private static final DateTimeZone CHINA_TIME = DateTimeZone.forOffsetHours(8);
 
+	@Mock
+	private StorageService storageService;
+	
 	@Test
 	public void test() throws URISyntaxException {
-		URI uri = new PresignedURIBuilder().
-			credential("norther", "1234567890").
-			location(Location.HUADONG_1).
+		URI uri = new PresignedURIBuilder(storageService).
 			bucket("mybucket").
 			key("data/中文/key123456789").
 			expires(new DateTime(2012, 9, 19, 16, 53, 0, 0).withZone(CHINA_TIME)).
@@ -41,9 +51,7 @@ public class PresignedURIBuilderTest {
 	
 	@Test
 	public void testWithOverridedResponse() throws URISyntaxException {
-		URI uri = new PresignedURIBuilder().
-				credential("norther", "1234567890").
-				location(Location.HUADONG_1).
+		URI uri = new PresignedURIBuilder(storageService).
 				bucket("mybucket").
 				key("key123456789").
 				expires(new DateTime(2012, 9, 19, 16, 55, 0, 0).withZone(CHINA_TIME)).
@@ -58,7 +66,9 @@ public class PresignedURIBuilderTest {
 		assertEquals(new URI(expected), uri);
 	}
 	
-	public static void main(String[] args) {
-		System.out.println(new DateTime(0L).plusSeconds(1348044399));
+	@Before
+	public void setUp() {
+		when(storageService.getCredential()).thenReturn(new Credential("norther", "1234567890"));
+		when(storageService.getBucketLocation("mybucket")).thenReturn(Location.HUADONG_1);
 	}
 }

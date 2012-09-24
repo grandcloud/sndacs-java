@@ -14,5 +14,7 @@ public interface SNDAStorage {
 
 	FluentBucket bucket(String name);
 
+	PresignedURIBuilder presignedURIBuilder();
+	
 	void destory();
 }
