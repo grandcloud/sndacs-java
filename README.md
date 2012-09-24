@@ -2,19 +2,18 @@
 
 [盛大云存储服务](http://www.grandcloud.cn/product/ecs)的官方Java SDK。
 
-## 特点
 1. DSL(Fluent Interface)风格的API，简洁易用
 2. 支持Access Policy Language，通过DSL风格的API生成Bucket Policy
-3. 支持大文件上传（大于5GB），对于大于5GB文件则自动通过Multipart Upload上传，对开发者透明
-4. 提供了独立的签名与认证模块
+3. 支持大文件上传（最大5TB），对于大文件则自动通过Multipart Upload实现上传，对开发者透明
+4. 提供了独立的签名与认证模块供开发者 使用
 5. 支持HTTPS安全网络访问
 6. 无需配置Endpoint，自动支持多盛大云存储服务的多IDC
 7. 支持限速传输
 
 ## 下载
 
-1. [snda-cloud-storage-java-sdk-2.0.0-SNAPSHOT.jar](http://www.grandcloud.cn/product/ecs) 二进制发布包
-2. [snda-cloud-storage-java-sdk-2.0.0-SNAPSHOT.zip](http://www.grandcloud.cn/product/ecs) 包含源代码，第三方依赖，Java Doc的发布包
+1. [snda-cloud-storage-java-sdk-2.0.0-SNAPSHOT.jar](http://www.grandcloud.cn/product/ecs)	二进制发布包
+2. [snda-cloud-storage-java-sdk-2.0.0-SNAPSHOT.zip](http://www.grandcloud.cn/product/ecs)	包含源代码，第三方依赖，Javadoc等内容的发布包
 
 ## Maven依赖
 ```xml
@@ -25,11 +24,13 @@
     </dependency>
 ```
 ## 使用
-盛大云存储服务Java SDK提供了DSL风格的API，简单易用，只需要两部即可访问盛大云存储服务
+盛大云存储服务Java SDK提供了DSL风格的API，简单易用，只需要两部即可访问盛大云存储服务：
+
+1 SNDAStorageBuilder构建SNDAStorage对象
+2 通过SNDAStorage对象访问云存储服务
 
 ### 构建SNDAStorage对象
 
-所有对盛大云存储服务的访问都是通过SNDAStorage对象开始，我们通过SNDAStorageBuilder来构建一个SNDAStorage：
 ```java
 	SNDAStorage storage = new SNDAStorageBuilder().credential(yourAccessKeyId, yourSecretAccessKey).build();
 ```
@@ -43,7 +44,6 @@
 		soTimeout(30 * 1000).			//设置SoTimeout为30秒
 		build();
 ```		
-通常来说，盛大云存储SDK已经对各项参数进行了调优，用户不需要改动过多的参数。
 
 SNDAStorage对象内部维护了一组HTTP连接池，在不使用该对象时，应该调用其destory方法销毁该对象，
 ```java
