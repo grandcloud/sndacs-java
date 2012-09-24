@@ -1,6 +1,13 @@
 *.swp
 .svn
+<<<<<<< HEAD
 target
 .classpath
 .project
 .settings
+=======
+dir_conflicts.prej
+target
+.classpath
+.settings
+>>>>>>> 48a5241745a5be479d1f2ea4a1af78981a13b15d

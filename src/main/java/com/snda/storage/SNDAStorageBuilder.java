@@ -11,7 +11,14 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 
 import com.google.common.util.concurrent.RateLimiter;
+<<<<<<< HEAD
 import com.snda.storage.core.Credential;
+=======
+<<<<<<< HEAD
+import com.snda.storage.core.Credential;
+=======
+>>>>>>> 8f99bbbb80d00fb854a39f29aba59d5b35718d69
+>>>>>>> 48a5241745a5be479d1f2ea4a1af78981a13b15d
 import com.snda.storage.core.support.GenericStorageService;
 import com.snda.storage.fluent.FluentBucket;
 import com.snda.storage.fluent.FluentService;
@@ -133,8 +140,18 @@ public class SNDAStorageBuilder {
 		return this;
 	}
 
+<<<<<<< HEAD
 	public SNDAStorageBuilder credential(String accessKeyId, String secretAccessKey) {
 		this.credential = new Credential(accessKeyId, secretAccessKey);
+=======
+<<<<<<< HEAD
+	public SNDAStorageBuilder credential(String accessKeyId, String secretAccessKey) {
+		this.credential = new Credential(accessKeyId, secretAccessKey);
+=======
+	public SNDAStorageBuilder credential(Credential credential) {
+		this.credential = credential;
+>>>>>>> 8f99bbbb80d00fb854a39f29aba59d5b35718d69
+>>>>>>> 48a5241745a5be479d1f2ea4a1af78981a13b15d
 		return this;
 	}
 

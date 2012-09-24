@@ -1,0 +1,11 @@
+com.snda.storage.exceptions
+com.snda.storage.security
+com.snda.storage.service
+com.snda.storage.service.impl.rest
+com.snda.storage.service.impl.rest.httpclient
+com.snda.storage.service.io
+com.snda.storage.service.model
+com.snda.storage.service.multi
+com.snda.storage.service.multi.cs
+com.snda.storage.service.multi.event
+com.snda.storage.service.utils

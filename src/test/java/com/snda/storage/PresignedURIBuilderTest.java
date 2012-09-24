@@ -25,7 +25,15 @@ public class PresignedURIBuilderTest {
 	@Test
 	public void test() throws URISyntaxException {
 		URI uri = new PresignedURIBuilder().
+<<<<<<< HEAD
 			credential("norther", "1234567890").
+=======
+<<<<<<< HEAD
+			credential("norther", "1234567890").
+=======
+			credential(new Credential("norther", "1234567890")).
+>>>>>>> 8f99bbbb80d00fb854a39f29aba59d5b35718d69
+>>>>>>> 48a5241745a5be479d1f2ea4a1af78981a13b15d
 			location(Location.HUADONG_1).
 			bucket("mybucket").
 			key("data/中文/key123456789").
@@ -42,7 +50,15 @@ public class PresignedURIBuilderTest {
 	@Test
 	public void testWithOverridedResponse() throws URISyntaxException {
 		URI uri = new PresignedURIBuilder().
+<<<<<<< HEAD
 				credential("norther", "1234567890").
+=======
+<<<<<<< HEAD
+				credential("norther", "1234567890").
+=======
+				credential(new Credential("norther", "1234567890")).
+>>>>>>> 8f99bbbb80d00fb854a39f29aba59d5b35718d69
+>>>>>>> 48a5241745a5be479d1f2ea4a1af78981a13b15d
 				location(Location.HUADONG_1).
 				bucket("mybucket").
 				key("key123456789").

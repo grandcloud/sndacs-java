@@ -20,6 +20,13 @@ import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
 import com.google.common.primitives.Bytes;
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+import com.snda.storage.Credential;
+>>>>>>> 8f99bbbb80d00fb854a39f29aba59d5b35718d69
+>>>>>>> 48a5241745a5be479d1f2ea4a1af78981a13b15d
 import com.snda.storage.Entity;
 import com.snda.storage.SNDAObject;
 import com.snda.storage.SNDAObjectMetadata;
@@ -58,7 +65,15 @@ public class ObjectOperationTest {
 		int contentLength = 512;
 		entity = new ByteEntity(RandomStringUtils.randomAscii(contentLength).getBytes());
 		storage = new SNDAStorageBuilder().
+<<<<<<< HEAD
 				credential("BMC5QLEDM156VY5HFNS4T0STT", "MGMzMDEwNTMtZWYwYy00ZGM4LWExNWMtMWZmMjliYTllODZm").
+=======
+<<<<<<< HEAD
+				credential("BMC5QLEDM156VY5HFNS4T0STT", "MGMzMDEwNTMtZWYwYy00ZGM4LWExNWMtMWZmMjliYTllODZm").
+=======
+				credential(new Credential("BMC5QLEDM156VY5HFNS4T0STT", "MGMzMDEwNTMtZWYwYy00ZGM4LWExNWMtMWZmMjliYTllODZm")).
+>>>>>>> 8f99bbbb80d00fb854a39f29aba59d5b35718d69
+>>>>>>> 48a5241745a5be479d1f2ea4a1af78981a13b15d
 				https().
 				build();
 		putObject();
