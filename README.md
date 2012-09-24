@@ -1,7 +1,14 @@
 #盛大云存储服务Java SDK
 
-[盛大云存储服务](http://www.grandcloud.cn/product/ecs)的官方Java SDK。
+[盛大云存储服务](http://www.grandcloud.cn/product/ecs)的官方提供的Java SDK。
 
+## 盛大云存储Java SDK可以：
+1. 管理Bucket信息
+2. 上传与下载Object数据
+3. 生成与设置Bucket Policy
+4. 生成预签名(Presigned)的可公开访问的URL
+
+## 盛大云存储Java SDK的特点
 1. DSL(Fluent Interface)风格的API，简洁易用
 2. 支持Access Policy Language，通过DSL风格的API生成Bucket Policy
 3. 支持大文件上传（最大5TB），自动通过Multipart Upload机制上传大文件，对开发者透明
@@ -11,6 +18,7 @@
 7. 支持限速传输
 
 ## 下载
+目前最新的版本是2012年09月24日发布的2.0.0：
 
 1. [snda-cloud-storage-java-sdk-2.0.0-SNAPSHOT.jar](http://www.grandcloud.cn/product/ecs)	二进制发布包
 2. [snda-cloud-storage-java-sdk-2.0.0-SNAPSHOT.zip](http://www.grandcloud.cn/product/ecs)	包含源代码，第三方依赖，Javadoc等内容的发布包
@@ -24,7 +32,7 @@
 </dependency>
 ```
 ## 使用
-盛大云存储服务Java SDK提供了DSL风格的API，简单易用，核心为SNDAStorage对象，开发者可通过该对象提供的各种方法来访问盛大云存储服务。
+盛大云存储服务Java SDK提供了DSL风格的Java API，易于上手，简单高效。其核心为SNDAStorage对象，开发者通过该对象提供的多种方法来访问盛大云存储服务。
 
 ### 构建SNDAStorage对象
 
@@ -91,8 +99,7 @@ storage.bucket("mybucket").object("data/upload/pic.jpg").entity(new File("d:\\us
 
 自定义Metadata
 ```java
-storage.bucket("mybucket").
-	object("data/upload/mydata").
+storage.bucket("mybucket").object("data/upload/mydata").
 	reducedRedundancy().
 	contentType("application/octet-stream").	
 	contentMD5("ABCDEFGUVWXYZ").
@@ -133,12 +140,11 @@ storage.bucket("mybucket").object("norther.mp3").range(1000, 5000).download();
 获取Object信息与Metadata(HEAD Object) 
 ```java
 SNDAObjectMetadata metadata = storage.bucket("mybucket").object("music/norther.mp3").head();
+```
 
 更新Object信息与Metadata
 ```java
-	storage.
-	bucket("mybucket").
-	object("music/norther.mp3").
+storage.bucket("mybucket").object("music/norther.mp3").
 	reducedRedundancy().
 	contentType("audio/mpeg").
 	metadata("x-snda-meta-nation", "Finland").
@@ -147,9 +153,7 @@ SNDAObjectMetadata metadata = storage.bucket("mybucket").object("music/norther.m
 
 复制Object
 ```java
-	storage.
-	bucket("mybucket").
-	object("book/english.txt").
+storage.bucket("mybucket").object("book/english.txt").
 	copySource("otherbucket", "data/edu/main.txt");
 	replaceMetadata().
 	contentType("text/plain").
