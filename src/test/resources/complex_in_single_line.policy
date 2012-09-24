@@ -1,1 +1,0 @@
-{"Id":"aaaa-bbbb-cccc-dddd","Statement":[{"Sid":"1","Effect":"Allow","Action":["GetObject","PutObject"],"Resource":["books/*","mp3/*"],"Condition":{"Bool":{"SecureTransport":true},"NumericEquals":{"EpochTime":22222},"StringLike":{"Referer":["http://www.mysite.com/*","http://mysite.com/*"]}}}]}

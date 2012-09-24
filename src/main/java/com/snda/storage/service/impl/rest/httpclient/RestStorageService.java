@@ -62,6 +62,7 @@ import com.snda.storage.service.utils.XmlResponsesSaxParser.ListBucketHandler;
  * @author snda
  *
  */
+@Deprecated
 public abstract class RestStorageService extends StorageService implements CSRequestAuthorizer {
 	
 	private static final Logger log = LoggerFactory.getLogger(RestStorageService.class);

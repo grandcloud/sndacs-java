@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListBucketResult>
+	<Name>books</Name>
+	<Prefix>A</Prefix>
+	<Marker>Alex</Marker>
+	<MaxKeys>1000</MaxKeys>
+	<Delimiter>/</Delimiter>
+	<IsTruncated>false</IsTruncated>
+	<Contents>
+		<Key>english</Key>
+		<LastModified>2009-10-12T17:50:30.000Z</LastModified>
+		<ETag>&quot;828ef3fdfa96f00ad9f27c383fc9ac7f&quot;</ETag>
+		<Size>1234</Size>
+	</Contents>
+	<Contents>
+		<Key>chinese</Key>
+		<LastModified>2009-10-12T19:00:35.000Z</LastModified>
+		<ETag>&quot;881f7881ac1bc144a2672e45babb8839&quot;</ETag>
+		<Size>45234</Size>
+		<StorageClass>REDUCED_REDUNDANCY</StorageClass>
+	</Contents>
+	<CommonPrefixes>
+		<Prefix>photos/</Prefix>
+	</CommonPrefixes>
+	<CommonPrefixes>
+		<Prefix>books/</Prefix>
+	</CommonPrefixes>
+</ListBucketResult>

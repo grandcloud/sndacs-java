@@ -9,6 +9,7 @@ import java.util.Date;
  * Represents a Part of a MultipartUpload operation.
  *
  */
+@Deprecated
 public class MultipartPart {
 	private final Integer partNumber;
     private final Date lastModified;

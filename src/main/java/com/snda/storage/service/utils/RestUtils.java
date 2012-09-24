@@ -31,6 +31,7 @@ import com.snda.storage.service.Constants;
  * @author snda
  *
  */
+@Deprecated
 public class RestUtils {
 
 	private static final Logger log = LoggerFactory.getLogger(RestUtils.class);

@@ -27,6 +27,7 @@ import com.snda.storage.service.utils.XmlResponsesSaxParser;
  * @author snda
  *
  */
+@Deprecated
 public abstract class StorageService {
 	public static final int BUCKET_STATUS__MY_BUCKET = 0;
 	

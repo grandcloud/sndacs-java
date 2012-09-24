@@ -5,6 +5,7 @@ package com.snda.storage.service.model;
  * Represents an owner object with a canonical ID and, optionally, a display name.
  *
  */
+@Deprecated
 public class StorageOwner {
 
     private String displayName;

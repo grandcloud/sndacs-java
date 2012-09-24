@@ -22,6 +22,7 @@ import com.snda.storage.service.multi.event.ServiceEvent;
  * </p>
  *
  */
+@Deprecated
 public class ThreadedStorageService {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ThreadedStorageService.class);

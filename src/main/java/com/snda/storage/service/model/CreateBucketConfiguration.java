@@ -10,6 +10,7 @@ import com.jamesmurty.utils.XMLBuilder;
  * created Bucket.
  *
  */
+@Deprecated
 public class CreateBucketConfiguration {
     private String location = null;
 

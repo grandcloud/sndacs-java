@@ -11,6 +11,7 @@ import com.snda.storage.service.Constants;
  * @author snda
  *
  */
+@Deprecated
 public class CSBucket extends StorageBucket {
 	
 	private String location = Constants.CS_DEFAULT_LOCATION;

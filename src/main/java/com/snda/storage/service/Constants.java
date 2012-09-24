@@ -6,6 +6,7 @@ package com.snda.storage.service;
  * @author snda
  *
  */
+@Deprecated
 public class Constants {
 
 	public static String CS_DEFAULT_HOSTNAME = "storage.grandcloud.cn";

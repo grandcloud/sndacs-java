@@ -43,6 +43,7 @@ import com.snda.storage.service.model.CSObject;
  * @author snda
  *
  */
+@Deprecated
 public class ServiceUtils {
 	private static final Logger log = LoggerFactory.getLogger(ServiceUtils.class);
 	

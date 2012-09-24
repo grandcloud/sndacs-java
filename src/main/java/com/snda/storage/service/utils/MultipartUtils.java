@@ -31,6 +31,7 @@ import com.snda.storage.service.multi.event.ServiceEvent;
  * SNDA Cloud Storage.
  *
  */
+@Deprecated
 public class MultipartUtils {
 
 	private static final Log log = LogFactory.getLog(MultipartUtils.class);

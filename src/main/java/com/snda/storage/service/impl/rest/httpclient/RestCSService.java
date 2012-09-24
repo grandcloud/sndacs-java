@@ -43,6 +43,7 @@ import com.snda.storage.service.utils.XmlResponsesSaxParser.ListMultipartUploads
  * @author snda
  *
  */
+@Deprecated
 public class RestCSService extends CSService {
 
 	private static final Logger log = LoggerFactory.getLogger(RestCSService.class);

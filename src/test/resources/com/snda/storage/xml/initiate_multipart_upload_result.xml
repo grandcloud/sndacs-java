@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<InitiateMultipartUploadResult>
+	<Bucket>mybucket</Bucket>
+	<Key>anykey</Key>
+	<UploadId>XXBsb2FkIElEIGZvciBlbHZpbmcncyVcdS1tb3ZpZS5tMnRzEEEwbG9hZA</UploadId>
+</InitiateMultipartUploadResult>

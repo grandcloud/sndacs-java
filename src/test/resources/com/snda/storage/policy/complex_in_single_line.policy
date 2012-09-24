@@ -1,0 +1,1 @@
+{"Id":"aaaa-bbbb-cccc-dddd","Statement":[{"Sid":"1","Effect":"Allow","Action":["storage:GetObject","storage:PutObject"],"Resource":["srn:snda:storage:::mybucket/books/*","srn:snda:storage:::mybucket/mp3/*"],"Condition":{"Bool":{"snda:SecureTransport":true},"NumericEquals":{"snda:EpochTime":22222},"StringLike":{"snda:Referer":["http://www.mysite.com/*","http://mysite.com/*"]}}}]}

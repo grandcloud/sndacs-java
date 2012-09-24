@@ -23,6 +23,7 @@ import com.snda.storage.service.utils.ServiceUtils;
  * @author snda
  *
  */
+@Deprecated
 public class StorageObject extends BaseStorageItem implements Cloneable {
 	
 	public static final String METADATA_HEADER_HASH_MD5 = "md5-hash";

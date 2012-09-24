@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
  * @author snda
  *
  */
+@Deprecated
 public class SNDACredentials extends ProviderCredentials {
 
 	/**

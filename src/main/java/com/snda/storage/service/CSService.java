@@ -32,6 +32,7 @@ import com.snda.storage.service.utils.ServiceUtils;
  * on SNDA accounts.
  *
  */
+@Deprecated
 public abstract class CSService extends RestStorageService {
 	
 	private static final Logger log = LoggerFactory.getLogger(CSService.class);	

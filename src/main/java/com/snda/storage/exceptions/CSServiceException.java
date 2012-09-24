@@ -7,6 +7,7 @@ package com.snda.storage.exceptions;
  * when communicating with Cloud Storage.
  *
  */
+@Deprecated
 public class CSServiceException extends ServiceException {
 
 	private static final long serialVersionUID = 1L;

@@ -14,6 +14,7 @@ import com.snda.storage.service.utils.Mimetypes;
  * @author snda
  *
  */
+@Deprecated
 public class CSObject extends StorageObject implements Cloneable {
 	
 	/**

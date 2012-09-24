@@ -8,6 +8,7 @@ import java.util.Date;
  * @author snda
  *
  */
+@Deprecated
 public class StorageBucket extends BaseStorageItem {
 	
 	/**

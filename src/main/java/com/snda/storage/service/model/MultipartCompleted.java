@@ -5,6 +5,7 @@ package com.snda.storage.service.model;
  * Represents a completed object resulting from a MultipartUpload operation.
  *
  */
+@Deprecated
 public class MultipartCompleted {
 	private String location;
     private String bucketName;

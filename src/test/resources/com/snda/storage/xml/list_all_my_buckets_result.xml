@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListAllMyBucketsResult>
+	<Buckets>
+		<Bucket>
+			<Name>books</Name>
+			<CreationDate>2011-04-29T16:45:09.000Z</CreationDate>
+		</Bucket>
+		<Bucket>
+			<Name>devices</Name>
+			<Location>huabei-1</Location>
+			<CreationDate>2011-04-29T16:41:58.000Z</CreationDate>
+		</Bucket>
+	</Buckets>
+</ListAllMyBucketsResult>

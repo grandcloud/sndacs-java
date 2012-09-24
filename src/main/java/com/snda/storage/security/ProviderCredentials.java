@@ -29,6 +29,7 @@ import com.snda.storage.service.utils.ServiceUtils;
  * @author snda
  *
  */
+@Deprecated
 public abstract class ProviderCredentials {
 	
 	protected static final Logger log = LoggerFactory.getLogger(ProviderCredentials.class);

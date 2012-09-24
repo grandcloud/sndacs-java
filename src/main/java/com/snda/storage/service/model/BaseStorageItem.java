@@ -11,6 +11,7 @@ import java.util.Map;
  * @author snda
  *
  */
+@Deprecated
 public abstract class BaseStorageItem {
 	public static final String METADATA_HEADER_CREATION_DATE = "Date";
     public static final String METADATA_HEADER_LAST_MODIFIED_DATE = "Last-Modified";

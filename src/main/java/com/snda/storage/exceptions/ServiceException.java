@@ -17,6 +17,7 @@ import com.snda.storage.service.StorageService;
  * @author snda
  *
  */
+@Deprecated
 public class ServiceException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;

@@ -10,6 +10,7 @@ import java.util.Map;
  * Represents a MultipartUpload operation.
  *
  */
+@Deprecated
 public class MultipartUpload {
 
     private String uploadId;
