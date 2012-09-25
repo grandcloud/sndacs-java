@@ -19,8 +19,8 @@
 ## 下载
 目前最新的版本是2012年09月24日发布的2.0.0：
 
-1. [snda-cloud-storage-java-sdk-2.0.0-SNAPSHOT.jar](http://www.grandcloud.cn/product/ecs)	二进制发布包
-2. [snda-cloud-storage-java-sdk-2.0.0-SNAPSHOT.zip](http://www.grandcloud.cn/product/ecs)	包含源代码，第三方依赖，Javadoc等内容的发布包
+1. [snda-cloud-storage-java-sdk-2.0.0-SNAPSHOT.jar](https://github.com/downloads/grandcloud/sndacs-java/snda-cloud-storage-java-sdk-2.0.0.jar)	二进制发布包
+2. [snda-cloud-storage-java-sdk-2.0.0-SNAPSHOT.zip](https://github.com/downloads/grandcloud/sndacs-java/snda-cloud-storage-java-sdk-2.0.0.zip)	包含源代码，第三方依赖，Javadoc等内容的发布包
 
 ## Maven依赖
 ```xml
@@ -395,61 +395,83 @@ try {
 	<tr>
 		<th>依赖</th>
 		<th>描述</th>
+		<th>网址</th>
 	</tr>
 	<tr>
 		<td>
-		[Google Guava](http://code.google.com/p/guava-libraries/)
+		Google Guava
 		</td>
 		<td>
 		Google提供的Java基础类库，提供了函数式编程，并发，集合操作等多种基础功能
 		</td>
+		<td>
+		http://code.google.com/p/guava-libraries/
+		</td>
 	</tr>
 	<tr>
 		<td>
-		[Joda Time](http://joda-time.sourceforge.net/)
+		Joda Time
 		</td>
 		<td>
 		一套关于时间的类库，已被收入至JDK 7中
 		</td>
+		<td>
+		http://joda-time.sourceforge.net/
+		</td>
 	</tr>
 	<tr>
 		<td>
-		[SLF4J](http://www.slf4j.org/)
+		SLF4J
 		</td>
 		<td>
 		功能强大的日志框架
 		</td>
+		<td>
+		http://www.slf4j.org/
+		</td>
 	</tr>
 	<tr>
 		<td>
-		[Apache Commons-Lang](http://commons.apache.org/lang/)
+		Apache Commons-Lang
 		</td>
 		<td>
 		用来实现一些基础的操作，例如Object hashcode与equals方法的实现
 		</td>
+		<td>
+		http://commons.apache.org/lang/
+		</td>
 	</tr>
 	<tr>
 		<td>
-		[Apache Commons-Codec](http://commons.apache.org/codec/)
+		Apache Commons-Codec
 		</td>
 		<td>
 		用来进行一些诸如Base64之类的编码算法
 		</td>
+		<td>
+		http://commons.apache.org/codec/
+		</td>
 	</tr>
 	<tr>
 		<td>
-		[Apache HTTP Client](http://hc.apache.org/httpclient-3.x/)
+		Apache HTTP Client
 		</td>
 		<td>
 		用来实现HTTP协议与网络数据的传输
 		</td>
+		<td>
+		http://hc.apache.org/httpclient-3.x/
+		</td>
 	</tr>
 	<tr>
 		<td>
-		[Jackson](http://jackson.codehaus.org/)
+		Jackson
 		</td>
 		<td>
 		著名的JSON格式序列化工具，只有在使用Bucket Policy时需要
+		</td>
+		<td>
+		http://jackson.codehaus.org/
 		</td>
 	</tr>
 	</tbody>
