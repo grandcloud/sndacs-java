@@ -309,24 +309,26 @@ try {
 
 初始化Multipart Upload
 ```java
-InitiateMultipartUploadResult result = storage.	bucket("mybucket").object("blob").initiateMultipartUpload();
+InitiateMultipartUploadResult result = storage.bucket("mybucket").object("blob").initiateMultipartUpload();
 ```
 
 获得Multipart Upload Id
 ```java
-String uploadId = result.getUploadId();						//获得Multipart Upload Id
+String uploadId = result.getUploadId();				
 ```
 上传Part
 ```java
-storage.bucket("mybucket").object("blob").multipartUpload(uploadId).partNumber(1).
+storage.bucket("mybucket").object("blob").multipartUpload(uploadId).
+	partNumber(1).
 	entity(new File("/user/data/bin1")).
 	upload();
 ```
 
 复制Part
 ```java
-storage.bucket("mybucket").object("blob").multipartUpload(uploadId).partNumber(2).
-	copySource("otherbucket", bigdata).
+storage.bucket("mybucket").object("blob").multipartUpload(uploadId).
+	partNumber(2).
+	copySource("otherbucket", "bigdata").
 	copySourceRange(255, 65335);
 	copy();
 ```
