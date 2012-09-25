@@ -24,7 +24,7 @@
 
 ## Maven
 
-```xml
+```
 <dependency>
 	<groupId>com.snda</groupId>
 	<artifactId>snda-cloud-storage-java-sdk</artifactId>
@@ -32,6 +32,13 @@
 </dependency>
 ```
 
+配置Sonatype仓库
+```
+<repository>
+	<id>sonatype-service</id>
+	<url>https://oss.sonatype.org/service/local/repositories/releases/content</url>
+</repository>
+```
 ## 使用
 盛大云存储服务Java SDK提供了DSL风格的Java API，易于上手，简单高效。其核心为SNDAStorage对象，开发者通过该对象提供的多种方法来访问盛大云存储服务。
 
