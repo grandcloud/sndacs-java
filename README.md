@@ -22,6 +22,16 @@
 1. [snda-cloud-storage-java-sdk-2.0.0-SNAPSHOT.jar](https://github.com/downloads/grandcloud/sndacs-java/snda-cloud-storage-java-sdk-2.0.0.jar)	二进制发布包
 2. [snda-cloud-storage-java-sdk-2.0.0-SNAPSHOT.zip](https://github.com/downloads/grandcloud/sndacs-java/snda-cloud-storage-java-sdk-2.0.0.zip)	包含源代码，第三方依赖，Javadoc等内容的发布包
 
+## Maven
+
+```xml
+<dependency>
+	<groupId>com.snda</groupId>
+	<artifactId>snda-cloud-storage-java-sdk</artifactId>
+	<version>2.0.0</version>
+</dependency>
+```
+
 ## 使用
 盛大云存储服务Java SDK提供了DSL风格的Java API，易于上手，简单高效。其核心为SNDAStorage对象，开发者通过该对象提供的多种方法来访问盛大云存储服务。
 
