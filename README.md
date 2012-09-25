@@ -62,29 +62,53 @@ for (BucketSummary each : storage.listBuckets()) {
 ```
 
 ### Bucket相关操作
+
+在默认的Location节点中创建名为mybucket的Bucket
 ```java
-storage.bucket("mybucket").create();				//在默认的Location节点中创建名为mybucket的Bucket
-    
-storage.bucket("mybucket").location(Location.HUADONG_1).create();	//在华东一节点中创建名为mybucket的Bucket
-    
-storage.bucket("mybucket").location().get();		//查看该Bucket的Location
+storage.bucket("mybucket").create();
+```
 
-storage.bucket("mybucket").delete();				//删除该Bucket
+在华东一节点中创建名为mybucket的Bucket
+```java
+storage.bucket("mybucket").location(Location.HUADONG_1).create();
+```
+查看Location
+```java
+storage.bucket("mybucket").location().get();	
 
-storage.bucket("mybucket").policy(myPolicy).set();	//设置新的Bucket Policy
+删除Bucket
+```java
+storage.bucket("mybucket").delete();			
+```
 
-storage.bucket("mybucket").policy().get();			//获取Bucket Policy
+设置Bucket Policy
+```java
+storage.bucket("mybucket").policy(myPolicy).set();
+```
 
-storage.bucket("mybucket").policy().delete();		//删除Bucket Policy
+获取Bucket Policy
+```java
+storage.bucket("mybucket").policy().get();
+```
 
-ListBucketResult result = storage.					//根据条件列出Objects
+删除Bucket Policy
+```java
+storage.bucket("mybucket").policy().delete();	
+```
+
+根据条件列出Objects
+```java
+ListBucketResult result = storage.				
 	bucket("mybucket").
 	prefix("upload/").
 	delimiter("/").
 	maxKeys(25).
 	listObjects();									
-	
-ListMultipartUploadsResult result = storage.		//根据条件列出Multipart Uploads
+```
+
+根据条件列出Multipart Uploads
+```java
+ListMultipartUploadsResult result = storage.	
 	bucket("mybucket").
 	prefix("data/").
 	maxUploads(50).
@@ -92,20 +116,15 @@ ListMultipartUploadsResult result = storage.		//根据条件列出Multipart Uplo
 ```
 
 ### Object相关的操作
+
 上传数据
 ```java
-storage.
-	bucket("mybucket").
-	object("data/upload/pic.jpg").
-	entity(new File("d:\\user\\my_picture.jpg")).
-	upload();
+storage.bucket("mybucket").object("data/upload/pic.jpg").entity(new File("d:\\user\\my_picture.jpg")).upload();
 ```
 
 自定义Metadata
 ```java
-storage.
-	bucket("mybucket").
-	object("data/upload/mydata").
+storage.bucket("mybucket").object("data/upload/mydata").
 	reducedRedundancy().
 	contentType("application/octet-stream").	
 	contentMD5("ABCDEFGUVWXYZ").
@@ -150,9 +169,7 @@ SNDAObjectMetadata metadata = storage.bucket("mybucket").object("music/norther.m
 
 更新Object信息与Metadata
 ```java
-storage.
-	bucket("mybucket").
-	object("music/norther.mp3").
+storage.bucket("mybucket").object("music/norther.mp3").
 	reducedRedundancy().
 	contentType("audio/mpeg").
 	metadata("x-snda-meta-nation", "Finland").
@@ -161,9 +178,7 @@ storage.
 
 复制Object
 ```java
-storage.
-	bucket("mybucket").
-	object("book/english.txt").
+storage.bucket("mybucket").object("book/english.txt").
 	copySource("otherbucket", "data/edu/main.txt");
 	replaceMetadata().
 	contentType("text/plain").
@@ -237,9 +252,7 @@ InputSupplier代表Entity的内容，是一个打开InputStream的回调(Callbac
 
 下面的样例中，盛大云存储SDK只在必须要的情况下，才会调用getInput来打开流。
 ```java
-object.
-	bucket("mybucket").
-	object("key").
+object.bucket("mybucket").object("key").
 	contentType("video/mp4").
 	entity(65535, new InputSupplier<InputStream>() {
 		@Override
@@ -293,49 +306,46 @@ try {
 
 若开发者有自己使用Multipart Upload的需求，可以参看下面的使用样例：
 
+初始化Multipart Upload
 ```java
-InitiateMultipartUploadResult result = storage.				//初始化Multipart Upload
-	bucket("mybucket").
-	object("blob").
-	initiateMultipartUpload();
+InitiateMultipartUploadResult result = storage.	bucket("mybucket").object("blob").initiateMultipartUpload();
+```
 
+获得Multipart Upload Id
+```java
 String uploadId = result.getUploadId();						//获得Multipart Upload Id
-
-storage.													//上传Part
-	bucket("mybucket").
-	object("blob").
-	multipartUpload(uploadId).
-	partNumber(1).
+```
+上传Part
+```java
+storage.bucket("mybucket").object("blob").multipartUpload(uploadId).partNumber(1).
 	entity(new File("/user/data/bin1")).
 	upload();
+```
 
-storage.													//复制Part
-	bucket("mybucket").
-	object("blob").
-	multipartUpload(uploadId).
-	partNumber(2).
+复制Part
+```java
+storage.bucket("mybucket").object("blob").multipartUpload(uploadId).partNumber(2).
 	copySource("otherbucket", bigdata).
 	copySourceRange(255, 65335);
 	copy();
-	
-storage.													//完成Multipart Upload
-	bucket("mybucket").
-	object("blob").
-	multipartUpload(uploadId).
+```
+
+完成Multipart Upload
+```java
+storage.bucket("mybucket").object("blob").multipartUpload(uploadId).
 	part(1, "ETag1").
 	part(2, "ETag2").
 	complete();
-	
-storage.													//放弃Multipart Upload
-	bucket("mybucket").
-	object("blob").
-	multipartUpload(uploadId).
-	abort();
-	
-storage.													//列出未完成的Parts
-	bucket("mybucket").
-	object("blob").
-	multipartUpload(uploadId).
+```
+
+放弃Multipart Upload
+```java
+storage.bucket("mybucket").object("blob").multipartUpload(uploadId).abort();
+```
+
+列出未完成的Parts
+```java
+storage.bucket("mybucket").object("blob").multipartUpload(uploadId).
 	partNumberMarker(10).
 	maxParts(5).
 	listParts();
