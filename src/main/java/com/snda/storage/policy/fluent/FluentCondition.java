@@ -2,10 +2,10 @@ package com.snda.storage.policy.fluent;
 
 /**
  * 
- * @author wangzijian@snda.com
+ * @author wangzijian
  * 
  */
 public interface FluentCondition extends StatementBuilder {
 
-	FluentCondition and(ConditionBuilder fluentCondition);
+	FluentConditionAnd where(ConditionBuilder conditionBuilder);
 }

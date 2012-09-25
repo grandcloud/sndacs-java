@@ -1,31 +1,26 @@
 package com.snda.storage.policy.fluent.impl;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.snda.storage.policy.Effect;
 import com.snda.storage.policy.Statement;
-import com.snda.storage.policy.fluent.FluentEffect;
+import com.snda.storage.policy.fluent.FluentAction;
 import com.snda.storage.policy.fluent.FluentPrincipal;
-
 /**
  * 
  * @author wangzijian@snda.com
  * 
  */
-class FluentPrincipalImpl implements FluentPrincipal {
+public class FluentPrincipalImpl implements FluentPrincipal {
 
 	private final Statement statement;
 
 	public FluentPrincipalImpl(Statement statement) {
-		this.statement = statement;
+		this.statement = checkNotNull(statement);
 	}
 
 	@Override
-	public FluentEffect isAllowed() {
-		return new FluentEffectImpl(statement.withEffect(Effect.ALLOW));
+	public FluentAction anyone() {
+		return new FluentActionImpl(statement);
 	}
 
-	@Override
-	public FluentEffect isNotAllowed() {
-		return new FluentEffectImpl(statement.withEffect(Effect.DENY));
-	}
 
 }

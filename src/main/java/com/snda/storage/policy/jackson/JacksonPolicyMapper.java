@@ -6,6 +6,7 @@ import static com.google.common.collect.Iterables.getOnlyElement;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -82,7 +83,7 @@ public class JacksonPolicyMapper implements PolicyMapper {
 		return root;
 	}
 
-	private ArrayNode serializeStatements(List<Statement> statements) {
+	private ArrayNode serializeStatements(Collection<Statement> statements) {
 		ArrayNode statementArrayNode = objectMapper.createArrayNode();
 		for (Statement statement : statements) {
 			statementArrayNode.add(serializeStatement(statement));

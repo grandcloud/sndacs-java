@@ -7,7 +7,5 @@ package com.snda.storage.policy.fluent;
  */
 public interface FluentPrincipal {
 
-	FluentEffect isAllowed();
-
-	FluentEffect isNotAllowed();
+	FluentAction anyone();
 }

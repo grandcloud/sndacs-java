@@ -7,5 +7,5 @@ package com.snda.storage.policy.fluent;
  */
 public interface FluentAction {
 
-	FluentResource to(String... resource);
+	FluentResource perform(String... action);
 }

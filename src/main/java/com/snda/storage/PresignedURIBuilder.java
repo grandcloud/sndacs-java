@@ -32,22 +32,22 @@ public class PresignedURIBuilder {
 	
 	private final StorageService storageService;
 	
-	public PresignedURIBuilder(StorageService storageService) {
-		this.storageService = checkNotNull(storageService);
-	}
-
 	private Method method = Method.GET;
 	private String bucket;
 	private String key;
 	private DateTime expires;
 	private ResponseOverride responseOverride = new ResponseOverride();
 	
+	public PresignedURIBuilder(StorageService storageService) {
+		this.storageService = checkNotNull(storageService);
+	}
+	
 	public URI build() {
 		checkRequired(method, "method");
 		checkRequired(bucket, "bucket");
 		checkRequired(key, "key");
 		checkRequired(expires, "expires");
-		Credential credential = checkRequired(storageService.getCredential(), "credential ");
+		Credential credential = checkRequired(storageService.getCredential(), "credential");
 		Request request = new Request().
 			withMethod(method).
 			withEndpoint(getLocation(bucket).getPublicEndpoint()).

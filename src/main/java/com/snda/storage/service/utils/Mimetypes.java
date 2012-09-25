@@ -74,32 +74,20 @@ public class Mimetypes {
 		InputStream mimetypesFile = mimetypes.getClass().getResourceAsStream(
 				"/mime.types");
 		if (mimetypesFile != null) {
-			if (log.isDebugEnabled()) {
-				log.debug("Loading mime types from file in the classpath: mime.types");
-			}
-			try {
+				log.info("Loading mime types from file in the classpath: mime.types");
+		try {
 				mimetypes.loadAndReplaceMimetypes(mimetypesFile);
 			} catch (IOException e) {
-				if (log.isErrorEnabled()) {
-					log.error(
-							"Failed to load mime types from file in the classpath: mime.types",
-							e);
-				}
+				log.error("Failed to load mime types from file in the classpath: mime.types", e);
 			} finally {
 				try {
 					mimetypesFile.close();
 				} catch (IOException e) {
-					if (log.isErrorEnabled()) {
-						log.error(
-								"Failed to load mime types from file in the classpath: mime.types",
-								e);
-					}
+					log.error("Failed to load mime types from file in the classpath: mime.types", e);
 				}
 			}
 		} else {
-			if (log.isWarnEnabled()) {
-				log.warn("Unable to find 'mime.types' file in classpath");
-			}
+			log.warn("Unable to find 'mime.types' file in classpath");
 		}
 		return mimetypes;
 	}
@@ -129,14 +117,14 @@ public class Mimetypes {
 					while (st.hasMoreTokens()) {
 						String extension = st.nextToken();
 						extensionToMimetypeMap.put(extension, mimetype);
-						if (log.isDebugEnabled()) {
-							log.debug("Setting mime type for extension '"
+						if (log.isInfoEnabled()) {
+							log.info("Setting mime type for extension '"
 									+ extension + "' to '" + mimetype + "'");
 						}
 					}
 				} else {
-					if (log.isDebugEnabled()) {
-						log.debug("Ignoring mimetype with no associated file extensions: '"
+					if (log.isInfoEnabled()) {
+						log.info("Ignoring mimetype with no associated file extensions: '"
 								+ line + "'");
 					}
 				}
@@ -167,19 +155,19 @@ public class Mimetypes {
             String ext = fileName.substring(lastPeriodIndex + 1);
             if (extensionToMimetypeMap.keySet().contains(ext)) {
                 String mimetype = extensionToMimetypeMap.get(ext);
-                if (log.isDebugEnabled()) {
-                    log.debug("Recognised extension '" + ext + "', mimetype is: '" + mimetype + "'");
+                if (log.isInfoEnabled()) {
+                    log.info("Recognised extension '" + ext + "', mimetype is: '" + mimetype + "'");
                 }
                 return mimetype;
             } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("Extension '" + ext + "' is unrecognized in mime type listing"
+                if (log.isInfoEnabled()) {
+                    log.info("Extension '" + ext + "' is unrecognized in mime type listing"
                     + ", using default mime type: '" + MIMETYPE_OCTET_STREAM + "'");
                 }
             }
         } else {
-            if (log.isDebugEnabled()) {
-                log.debug("File name has no extension, mime type cannot be recognised for: " + fileName);
+            if (log.isInfoEnabled()) {
+                log.info("File name has no extension, mime type cannot be recognised for: " + fileName);
             }
         }
         return MIMETYPE_OCTET_STREAM;

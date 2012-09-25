@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 import com.snda.storage.core.ValueObject;
-import com.snda.storage.policy.fluent.FluentStatement;
-import com.snda.storage.policy.fluent.impl.FluentStatementImpl;
+import com.snda.storage.policy.fluent.FluentPrincipal;
+import com.snda.storage.policy.fluent.impl.FluentPrincipalImpl;
 
 /**
  * 
@@ -20,10 +20,14 @@ public class Statement extends ValueObject {
 	private List<String> resources = Lists.newArrayList();
 	private List<Condition> conditions = Lists.newArrayList();
 
-	public static FluentStatement that() {
-		return new FluentStatementImpl();
+	public static FluentPrincipal allow() {
+		return new FluentPrincipalImpl(new Statement().withEffect(Effect.ALLOW));
 	}
 
+	public static FluentPrincipal deny() {
+		return new FluentPrincipalImpl(new Statement().withEffect(Effect.DENY));
+	}
+	
 	public Statement withSid(String sid) {
 		setSid(sid);
 		return this;
@@ -39,13 +43,13 @@ public class Statement extends ValueObject {
 		return this;
 	}
 
-	public Statement withAction(String... actions) {
-		setAction(Action.action(actions));
+	public Statement withAction(String... action) {
+		setAction(Action.action(action));
 		return this;
 	}
 
-	public Statement withNotAction(String... actions) {
-		setAction(Action.notAction(actions));
+	public Statement withNotAction(String... action) {
+		setAction(Action.notAction(action));
 		return this;
 	}
 

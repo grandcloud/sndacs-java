@@ -5,7 +5,7 @@ package com.snda.storage.policy.fluent;
  * @author wangzijian@snda.com
  * 
  */
-public interface FluentResource extends StatementBuilder {
+public interface FluentResource {
 
-	FluentCondition where(ConditionBuilder fluentCondition);
+	FluentCondition to(String... resource);
 }

@@ -1,7 +1,7 @@
 package com.snda.storage.policy.fluent.impl;
 
+import com.google.common.collect.ImmutableList;
 import com.snda.storage.policy.Statement;
-import com.snda.storage.policy.fluent.ConditionBuilder;
 import com.snda.storage.policy.fluent.FluentCondition;
 import com.snda.storage.policy.fluent.FluentResource;
 
@@ -19,13 +19,8 @@ class FluentResourceImpl implements FluentResource {
 	}
 
 	@Override
-	public FluentCondition where(ConditionBuilder conditionBuilder) {
-		return new FluentConditionImpl(statement.withCondition(conditionBuilder.build()));
-	}
-
-	@Override
-	public Statement build() {
-		return statement;
+	public FluentCondition to(String... resource) {
+		return new FluentConditionImpl(statement.withResources(ImmutableList.copyOf(resource)));
 	}
 
 }

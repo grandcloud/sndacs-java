@@ -183,6 +183,40 @@ storage.
 	metadata("x-snda-meta-author", "Jack Jackson").
 	update();
 ```
+## Bucket Policy
+盛大云存储SDK提供了强大的Bucket Policy构建器，开发者可以轻易生成和设置所需要的Bucket Policy。
+
+允许匿名用户下载该Bucket中的所有数据，但限定User-Agent为Android或IOS，防盗链Referer设置为*.mycompany.com/*
+```java
+Statement statement = Statement.allow().anyone().perform("snda:GetObject").to("srn:snda:storage:::mybucket/*").
+	where(userAgent().equals("Android", "IOS")).
+	and(referer().equals("*.mycompany.com/*")).
+	identifed("public-get-object");
+
+storage.bucket("mybucket").policy(new Policy().
+	withRandomId().
+	withStatement(statement)).
+	set();
+```
+许匿名用户下载该Bucket中的所有数据，限定请求的时间必须在2012年10月1日0点至2012年10月8日0点之间：
+```java
+Statement.allow().anyone().perform("snda:GetObject").to("srn:snda:storage:::mybucket/*").
+	where(currentTime().greaterThan(new DateTime(2012, 10, 1, 0, 0, 0))).
+	and(currentTime().lessThan(new DateTime(2012, 10, 8, 0, 0, 0))).
+	identifed("public-get-object");
+
+storage.bucket("mybucket").policy(new Policy().
+	withRandomId().
+	withStatement(statement)).
+	set();
+```
+设置请求的IP必须在指定的"192.168.176.0/24"范围内，且链接为https安全链接：
+Statement.allow().anyone().perform("snda:GetObject").to("srn:snda:storage:::mybucket/*").
+	where(sourceIp().whitelisting("192.168.176.0/24")).
+	and(secureTransport().bool(true)).
+	identifed("public-get-object");
+
+```
 
 ## 生成预签名的URI
 盛大云存储提供了一种基于查询字串(Query String)的认证方式，即通过预签名(Presigned)的方式，为要发布的Object生成一个带有认证信息的URI，并将它分发给第三方用户来实现公开访问。
@@ -360,14 +394,70 @@ try {
 
 ## 依赖
 盛大云存储SDK依赖以下的第三方库:
-
-1. google-guava			Google提供的Java基础类库，提供了函数式编程，并发，集合操作等多种基础功能
-2. joda-time			一套关于时间的类库，已被收入至JDK 7中
-3. commons-codec		用来进行一些诸如Base64之类的编码算法
-4. commons-lang			用来实现一些基础的操作，例如Object hashcode与equals方法的实现
-5. http-client			Apache HttpClient 4，用来实现HTTP协议与网络数据的传输
-6. jackson				Jackson，著名的JSON格式序列化工具，只有在使用Bucket Policy时需要
-
+<table>
+	<tbody>
+	<tr>
+		<th>依赖</th>
+		<th>描述</th>
+	</tr>
+	<tr>
+		<td>
+		[Google Guava](http://code.google.com/p/guava-libraries/)
+		</td>
+		<td>
+		Google提供的Java基础类库，提供了函数式编程，并发，集合操作等多种基础功能
+		</td>
+	</tr>
+	<tr>
+		<td>
+		[Joda Time](http://joda-time.sourceforge.net/)
+		</td>
+		<td>
+		一套关于时间的类库，已被收入至JDK 7中
+		</td>
+	</tr>
+	<tr>
+		<td>
+		[SLF4J](http://www.slf4j.org/)
+		</td>
+		<td>
+		功能强大的日志框架
+		</td>
+	</tr>
+	<tr>
+		<td>
+		[Apache Commons-Lang](http://commons.apache.org/lang/)
+		</td>
+		<td>
+		用来实现一些基础的操作，例如Object hashcode与equals方法的实现
+		</td>
+	</tr>
+	<tr>
+		<td>
+		[Apache Commons-Codec](http://commons.apache.org/codec/)
+		</td>
+		<td>
+		用来进行一些诸如Base64之类的编码算法
+		</td>
+	</tr>
+	<tr>
+		<td>
+		[Apache HTTP Client](http://hc.apache.org/httpclient-3.x/)
+		</td>
+		<td>
+		用来实现HTTP协议与网络数据的传输
+		</td>
+	</tr>
+	<tr>
+		<td>
+		[Jackson](http://jackson.codehaus.org/)
+		</td>
+		<td>
+		著名的JSON格式序列化工具，只有在使用Bucket Policy时需要
+		</td>
+	</tr>
+	</tbody>
+</table>
 ## Copyright
 
 Copyright (c) 2012 grandcloud.cn.

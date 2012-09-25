@@ -1,5 +1,5 @@
 package com.snda.storage.integration;
-import static com.snda.storage.policy.fluent.impl.Conditions.currentTime;
+import static com.snda.storage.policy.fluent.impl.Conditions.*;
 import static org.junit.Assert.assertEquals;
 
 import org.joda.time.DateTime;
@@ -23,11 +23,14 @@ public class BucketOperationTest {
 
 	@Test
 	public void testPolicy() {
+		Statement statement = Statement.allow().anyone().perform("storage:GetObject").to("*").
+				where(currentTime().lessThan(new DateTime(2012, 10, 1, 10, 0, 0))).
+				and(currentTime().greaterThan(new DateTime(2012, 10, 10, 10, 0, 0))).
+				identifed("public-get-object");
+		
 		Policy policy = new Policy().
 			withRandomId().
-			withStatement(Statement.that().anyone().isAllowed().toDo("storage:GetObject").to("*").
-					where(currentTime().lessThan(new DateTime(2012, 10, 1, 10, 0, 0))).
-					and(currentTime().greaterThan(new DateTime(2012, 10, 10, 10, 0, 0))));
+			withStatement(statement);
 		
 		storage.bucket(bucket).policy(policy).set();
 		

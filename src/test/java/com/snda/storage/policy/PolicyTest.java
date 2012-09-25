@@ -9,11 +9,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
-
-import com.google.common.collect.ImmutableList;
-import com.snda.storage.policy.Effect;
-import com.snda.storage.policy.Policy;
-import com.snda.storage.policy.Statement;
 /**
  * 
  * @author wangzijian@snda.com
@@ -22,78 +17,47 @@ import com.snda.storage.policy.Statement;
 public class PolicyTest {
 
 	@Test
-	public void testAddAndRemoveStatement() {
-		Policy policy = new Policy();
-		policy.addStatement(new Statement());
-		policy.addStatement(new Statement());
-		policy.addStatement(new Statement());
-		policy.addStatement(new Statement());
-		policy.addStatement(new Statement());
-		
-		assertEquals(ImmutableList.of(
-				new Statement().withSid("statement-1"),
-				new Statement().withSid("statement-2"),
-				new Statement().withSid("statement-3"),
-				new Statement().withSid("statement-4"),
-				new Statement().withSid("statement-5")), 
-				policy.getStatements());
-		
-		policy.removeStatement("statement-3");
-		policy.removeStatement("statement-5");
-		
-		assertEquals(ImmutableList.of(
-				new Statement().withSid("statement-1"),
-				new Statement().withSid("statement-2"),
-				new Statement().withSid("statement-4")), 
-				policy.getStatements());
-	}
-	
-	@Test
 	public void testFluentAPI() {
-		Policy actual = new Policy().
-				withId("1234567890").
-				withStatement(Statement.that().anyone().isAllowed().toDo("GetObject", "PutObject").to("mybucket/user/data"));
-		Policy expected = new Policy().
-				withId("1234567890").
-				withStatement(new Statement().
+		Statement actual = Statement.allow().anyone().perform("GetObject").to("mybucket/user/data").identifed("statement-1");
+		Statement expected = new Statement().
 				withSid("statement-1").
 				withEffect(Effect.ALLOW).
-				withAction("GetObject", "PutObject").
-				withResource("mybucket/user/data"));
+				withAction("GetObject").
+				withResource("mybucket/user/data");
 		assertEquals(expected, actual);
 	}
 	
 	@Test
 	public void testFluentAPIWithCondition() {
-		Policy actual = new Policy().
-				withId("1234567890").
-				withStatement(Statement.that().anyone().isAllowed().toDo("GetObject", "PutObject").to("mybucket/user/data").
-						where(currentTime().greaterThan(new DateTime(2009, 04, 16, 12, 00, 00))).
-						and(currentTime().lessThan(new DateTime(2009, 04, 16, 15, 00, 00))).
-						and(sourceIp().whitelisting("192.168.176.0/24", "192.168.143.0/24")));
+		Statement actual = Statement.allow().anyone().perform("GetObject", "PutObject").to("mybucket/user/data").
+				where(currentTime().greaterThan(new DateTime(2009, 04, 16, 12, 00, 00))).
+				and(currentTime().lessThan(new DateTime(2009, 04, 16, 15, 00, 00))).
+				and(sourceIp().whitelisting("192.168.176.0/24", "192.168.143.0/24")).
+				identifed("123");
 		
-		Policy expected = new Policy().
-				withId("1234567890").
-				withStatement(new Statement().
-				withSid("statement-1").
+		Statement expected = new Statement().
+				withSid("123").
 				withEffect(Effect.ALLOW).
 				withAction("GetObject", "PutObject").
 				withResource("mybucket/user/data").
 				withCondition("DateGreaterThan", "snda:CurrentTime", new DateTime(2009, 04, 16, 12, 00, 00)).
 				withCondition("DateLessThan", "snda:CurrentTime", new DateTime(2009, 04, 16, 15, 00, 00)).
-				withCondition("IpAddress", "snda:SourceIp", "192.168.176.0/24", "192.168.143.0/24"));
+				withCondition("IpAddress", "snda:SourceIp", "192.168.176.0/24", "192.168.143.0/24");
 		assertEquals(expected, actual);
 	}
 	
 	@Test
 	public void testFluentAPIWithMoreConditions() {
+		Statement publicGetObject = Statement.deny().anyone().perform("GetObject").to("mybucket/user/data").
+				where(userAgent().equals("Android", "IOS")).
+				and(secureTransport().bool(true)).
+				and(referer().notEquals("*.mycompany.com/*", "*.mycompany2.com/*")).
+				and(epochTime().lessThan(123456789)).
+				identifed("statement-1");
+		
 		Policy actual = new Policy().
 				withId("1234567890").
-				withStatement(Statement.that().anyone().isNotAllowed().toDo("GetObject").to("mybucket/user/data").
-					where(userAgent().equals("Android", "IOS")).
-					and(secureTransport().bool(true)).
-					and(referer().notEquals("*.mycompany.com/*", "*.mycompany2.com/*")).
-					and(epochTime().lessThan(123456789)));
+				withStatement(publicGetObject);
 		
 		Policy expected = new Policy().
 				withId("1234567890").

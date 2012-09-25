@@ -9,5 +9,5 @@ import com.snda.storage.policy.Statement;
  */
 public interface StatementBuilder {
 
-	Statement build();
+	Statement identifed(String id);
 }
