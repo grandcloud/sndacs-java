@@ -296,7 +296,7 @@ try {
 ## Multipart Upload API
 开发这使用盛大云存储SDK上传文件时，SDK会透明的使用Multipart Upload实现对大文件上传，一般情况下用户不需要自己来使用Multipart Upload API。
 
-若开发者有自己实用Multipart Upload的需求，可以参看下面的使用样例：
+若开发者有自己使用Multipart Upload的需求，可以参看下面的使用样例：
 
 ```java
 InitiateMultipartUploadResult result = storage.				//初始化Multipart Upload
