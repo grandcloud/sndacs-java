@@ -130,37 +130,22 @@ SNDAObject实现了java.io.Closeable接口，其内部持有了代表Object内�
 
 下载至本地硬盘
 ```java
-storage.
-	bucket("mybucket").
-	object("data/upload/pic.jpg").
-	download().
-	to(new File("~/download/my_pic.jpg"));
+storage.bucket("mybucket").object("data/pic.jpg").download().to(new File("~/download/my_pic.jpg"));
 ```
 
 条件下载(Conditional GET)
 ```java
-storage.
-	bucket("mybucket").
-	object("norther.mp3").
-	ifModifedSince(new DateTime(2012, 10, 7, 20, 0, 0)).
-	download();
+storage.bucket("mybucket").object("norther.mp3").ifModifedSince(new DateTime(2012, 10, 7, 20, 0, 0)).download();
 ```
 
 分段下载(Range GET)
 ```java
-storage.
-	bucket("mybucket").
-	object("norther.mp3").
-	range(1000, 5000).
-	download();
+storage.bucket("mybucket").object("norther.mp3").range(1000, 5000).download();
 ```
 
 获取Object信息与Metadata(HEAD Object) 
 ```java
-SNDAObjectMetadata metadata = storage.
-	bucket("mybucket").
-	object("music/norther.mp3").
-	head();
+SNDAObjectMetadata metadata = storage.bucket("mybucket").object("music/norther.mp3").head();
 ```
 
 更新Object信息与Metadata
@@ -188,9 +173,9 @@ storage.
 ## Bucket Policy
 盛大云存储SDK提供了强大的Bucket Policy构建器，开发者可以轻易生成和设置所需要的Bucket Policy。
 
-允许匿名用户下载该Bucket中的所有数据，但限定User-Agent为Android或IOS，防盗链Referer设置为*.mycompany.com/*
+允许匿名用户下载该Bucket中key以public作为前缀的所有Object，同时限定User-Agent为Android或IOS，防盗链Referer设置为*.mycompany.com/*
 ```java
-Statement statement = Statement.allow().anyone().perform("snda:GetObject").to("srn:snda:storage:::mybucket/*").
+Statement statement = Statement.allow().anyone().perform("snda:GetObject").to("srn:snda:storage:::mybucket/public/*").
 	where(userAgent().equals("Android", "IOS")).
 	and(referer().equals("*.mycompany.com/*")).
 	identifed("public-get-object");
@@ -200,18 +185,18 @@ storage.bucket("mybucket").policy(new Policy().
 	withStatement(statement)).
 	set();
 ```
-许匿名用户下载该Bucket中的所有数据，限定请求的时间必须在2012年10月1日0点至2012年10月8日0点之间：
+允许匿名用户通过HTTPS下载该Bucket中的所有Object，且请求时间必须在2012年10月1日0点至2012年10月8日0点之间：
 ```java
 Statement.allow().anyone().perform("snda:GetObject").to("srn:snda:storage:::mybucket/*").
-	where(currentTime().greaterThan(new DateTime(2012, 10, 1, 0, 0, 0))).
+	where(secureTransport().bool(true)).
+	and(currentTime().greaterThan(new DateTime(2012, 10, 1, 0, 0, 0))).
 	and(currentTime().lessThan(new DateTime(2012, 10, 8, 0, 0, 0))).
 	identifed("public-get-object-with-time-restriction");
 ```
-设置请求的IP必须在指定的"192.168.176.0/24"范围内，且链接为https安全链接：
+设置请求的IP必须在指定的"192.168.176.0/24"范围内：
 ```java
 Statement.allow().anyone().perform("snda:GetObject").to("srn:snda:storage:::mybucket/*").
 	where(sourceIp().ipAddress("192.168.176.0/24")).
-	and(secureTransport().bool(true)).
 	identifed("public-get-object-with-connection-restriction");
 
 ```
