@@ -101,7 +101,7 @@ storage.
 	contentMD5("ABCDEFGUVWXYZ").
 	contentLanguage("en").
 	metadata("x-snda-meta-foo", "bar").
-	metadata("x-snda-meta-creation", new DateTime().
+	metadata("x-snda-meta-creation", new DateTime()).
 	metadata("x-snda-meta-author", "wangzijian@snda.com").
 	entity(2048L, inputStream).
 	upload();
