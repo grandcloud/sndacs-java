@@ -68,13 +68,14 @@ for (BucketSummary each : storage.listBuckets()) {
 storage.bucket("mybucket").create();
 ```
 
-在华东一节点中创建名为mybucket的Bucket
+在华东一节点创建Bucket
 ```java
 storage.bucket("mybucket").location(Location.HUADONG_1).create();
 ```
 查看Location
 ```java
 storage.bucket("mybucket").location().get();	
+```
 
 删除Bucket
 ```java
