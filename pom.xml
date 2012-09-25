@@ -8,12 +8,14 @@
 	<description>The SNDA Grandcloud Storage SDK for Java provides Java APIs for building software on Grandcloud Storage’ cost-effective, scalable, and reliable infrastructure products.</description>
 	<url>http://www.grandcloud.cn/product/ecs</url>
 
+	<!-- 
 	<parent> 
 		<groupId>org.sonatype.oss</groupId> 
 		<artifactId>oss-parent</artifactId> 
 		<version>7</version> 
 	</parent>
-
+ 	-->
+ 	
 	<scm>
     	<connection>scm:git:git@github.com:grandcloud/sndacs-java.git</connection>
     	<developerConnection>scm:git:git@github.com:grandcloud/sndacs-java.git</developerConnection>
@@ -123,8 +125,6 @@
 			<version>${logback.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- <dependency> <groupId>org.bouncycastle</groupId> <artifactId>bcprov-jdk16</artifactId> 
-			<version>1.46</version> </dependency> -->
 		<dependency>
 			<groupId>com.jamesmurty.utils</groupId>
 			<artifactId>java-xmlbuilder</artifactId>
@@ -197,6 +197,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
@@ -210,6 +211,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
