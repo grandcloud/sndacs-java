@@ -21,6 +21,15 @@ public class BucketOperationTest {
 	private SNDAStorage storage;
 	private String bucket;
 
+	@Before
+	public void setUp() {
+		//Replace with your data 
+		bucket = "${bucket}";
+		storage = new SNDAStorageBuilder().
+				credential("${access_key_id}", "${secret_access_key}").
+				build();
+	}
+	
 	@Test
 	public void testPolicy() {
 		Statement statement = Statement.allow().anyone().perform("storage:GetObject").to("*").
@@ -38,14 +47,6 @@ public class BucketOperationTest {
 		assertEquals(policy, policy2);
 		
 		storage.bucket(bucket).policy().delete();
-	}
-	
-	@Before
-	public void setUp() {
-		bucket = "beijing";
-		storage = new SNDAStorageBuilder().
-				credential("BMC5QLEDM156VY5HFNS4T0STT", "MGMzMDEwNTMtZWYwYy00ZGM4LWExNWMtMWZmMjliYTllODZm").
-				build();
 	}
 	
 }

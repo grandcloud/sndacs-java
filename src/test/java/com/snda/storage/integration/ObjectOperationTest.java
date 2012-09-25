@@ -49,7 +49,13 @@ public class ObjectOperationTest {
 	
 	@Before
 	public void setUp() {
-		bucket = "beijing";
+		//Replace with your data 
+		bucket = "${bucket}";
+		storage = new SNDAStorageBuilder().
+				credential("${access_key_id}", "${secret_access_key}").
+				https().
+				build();
+		
 		key = "中文目录/folder/中文2/" + UUID.randomUUID().toString();
 		contentType = "application/octet-stream";
 		metadata = ImmutableMap.<String, Object> of(
@@ -57,10 +63,7 @@ public class ObjectOperationTest {
 				"x-snda-meta-random", UUID.randomUUID().toString());
 		int contentLength = 512;
 		entity = new ByteEntity(RandomStringUtils.randomAscii(contentLength).getBytes());
-		storage = new SNDAStorageBuilder().
-				credential("BMC5QLEDM156VY5HFNS4T0STT", "MGMzMDEwNTMtZWYwYy00ZGM4LWExNWMtMWZmMjliYTllODZm").
-				https().
-				build();
+		
 		putObject();
 	}
 	
