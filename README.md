@@ -80,7 +80,7 @@ storage.bucket("mybucket").policy().delete();		//删除Bucket Policy
 ListBucketResult result = storage.					//根据条件列出Objects
 	bucket("mybucket").
 	prefix("upload/").
-	delimiter("/")
+	delimiter("/").
 	maxKeys(25).
 	listObjects();									
 	
