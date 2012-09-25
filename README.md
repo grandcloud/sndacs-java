@@ -203,14 +203,14 @@ storage.bucket("mybucket").policy(new Policy().
 Statement.allow().anyone().perform("snda:GetObject").to("srn:snda:storage:::mybucket/*").
 	where(currentTime().greaterThan(new DateTime(2012, 10, 1, 0, 0, 0))).
 	and(currentTime().lessThan(new DateTime(2012, 10, 8, 0, 0, 0))).
-	identifed("public-get-object");
+	identifed("public-get-object-with-time-restriction");
 ```
 设置请求的IP必须在指定的"192.168.176.0/24"范围内，且链接为https安全链接：
 ```java
 Statement.allow().anyone().perform("snda:GetObject").to("srn:snda:storage:::mybucket/*").
-	where(sourceIp().whitelisting("192.168.176.0/24")).
+	where(sourceIp().ipAddress("192.168.176.0/24")).
 	and(secureTransport().bool(true)).
-	identifed("public-get-object");
+	identifed("public-get-object-with-connection-restriction");
 
 ```
 

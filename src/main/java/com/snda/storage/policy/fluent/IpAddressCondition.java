@@ -7,7 +7,7 @@ package com.snda.storage.policy.fluent;
  */
 public interface IpAddressCondition {
 
-	ConditionBuilder whitelisting(String... list);
+	ConditionBuilder ipAddress(String... list);
 
-	ConditionBuilder blacklisting(String... list);
+	ConditionBuilder notIpAddress(String... list);
 }

@@ -15,12 +15,12 @@ class IpAddressConditionImpl extends ConditionImpl<String> implements IpAddressC
 	}
 
 	@Override
-	public ConditionBuilder whitelisting(String... list) {
+	public ConditionBuilder ipAddress(String... list) {
 		return fluentCondition("IpAddress", list);
 	}
 
 	@Override
-	public ConditionBuilder blacklisting(String... list) {
+	public ConditionBuilder notIpAddress(String... list) {
 		return fluentCondition("NotIpAddress", list);
 	}
 

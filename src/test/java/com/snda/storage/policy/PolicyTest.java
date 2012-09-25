@@ -32,7 +32,7 @@ public class PolicyTest {
 		Statement actual = Statement.allow().anyone().perform("GetObject", "PutObject").to("mybucket/user/data").
 				where(currentTime().greaterThan(new DateTime(2009, 04, 16, 12, 00, 00))).
 				and(currentTime().lessThan(new DateTime(2009, 04, 16, 15, 00, 00))).
-				and(sourceIp().whitelisting("192.168.176.0/24", "192.168.143.0/24")).
+				and(sourceIp().ipAddress("192.168.176.0/24", "192.168.143.0/24")).
 				identifed("123");
 		
 		Statement expected = new Statement().
