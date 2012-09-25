@@ -24,7 +24,7 @@
 
 ## Maven
 
-```
+```xml
 <dependency>
 	<groupId>com.snda</groupId>
 	<artifactId>snda-cloud-storage-java-sdk</artifactId>
@@ -33,7 +33,7 @@
 ```
 
 配置Sonatype仓库
-```
+```xml
 <repository>
 	<id>sonatype-service</id>
 	<url>https://oss.sonatype.org/service/local/repositories/releases/content</url>
