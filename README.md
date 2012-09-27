@@ -191,7 +191,7 @@ storage.bucket("mybucket").object("book/english.txt").
 	replaceMetadata().
 	contentType("text/plain").
 	metadata("x-snda-meta-author", "Jack Jackson").
-	update();
+	copy();
 ```
 ## Bucket Policy
 盛大云存储SDK提供了强大的Bucket Policy构建器，开发者可以轻易生成和设置所需要的Bucket Policy。
