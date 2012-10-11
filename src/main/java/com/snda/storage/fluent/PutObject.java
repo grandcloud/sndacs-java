@@ -43,6 +43,8 @@ public interface PutObject {
 	
 	UploadObject contentMD5(String contentMD5);
 
+	UploadObject multipartUploadSize(long multipartUploadSize);
+	
 	UploadObject partSize(long partSize);
 
 	UploadObject entity(Entity entity);

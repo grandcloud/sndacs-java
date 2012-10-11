@@ -43,6 +43,11 @@ class PutObjectImpl implements PutObject {
 	}
 	
 	@Override
+	public UploadObject multipartUploadSize(long multipartUploadSize) {
+		return newUploadObject().multipartUploadSize(multipartUploadSize);
+	}
+
+	@Override
 	public UploadObject partSize(long partSize) {
 		return newUploadObject().partSize(partSize);
 	}

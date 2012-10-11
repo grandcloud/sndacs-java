@@ -31,13 +31,16 @@ import com.snda.storage.xml.Part;
  */
 public class MultipartObjectUploader implements ObjectUploader {
 
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(MultipartObjectUploader.class);
 	
-	private static final long DEFAULT_PART_SIZE = 100 * MB;
+	private static final long DEFAULT_MULTIPART_UPLOAD_SIZE = 100 * MB;
+	private static final long DEFAULT_PART_SIZE = 5 * MB;
 	private static final long MAX_OBJECT_SIZE = 5 * TB;
 	
 	private final StorageService storageService;
 	
+	private long multipartUploadSize = DEFAULT_MULTIPART_UPLOAD_SIZE;
 	private long partSize = DEFAULT_PART_SIZE;
 
 	public MultipartObjectUploader(StorageService storageService) {
@@ -50,7 +53,7 @@ public class MultipartObjectUploader implements ObjectUploader {
 		long contentLength = entity.getContentLength();
 		LOGGER.info("Object Content-Length: {}", contentLength);
 		checkArgument(contentLength <= MAX_OBJECT_SIZE, "Object is too large for uploading");
-		if (contentLength <= partSize) {
+		if (contentLength <= multipartUploadSize) {
 			return storageService.uploadObject(bucket, key, putObjectRequest);
 		}
 		InitiateMultipartUploadResult multipartUpload = storageService.initiateMultipartUpload(bucket, key, putObjectRequest.getObjectCreation());
@@ -135,6 +138,12 @@ public class MultipartObjectUploader implements ObjectUploader {
 		} catch (Exception e) {
 			LOGGER.warn("Abort Multipart Upload Failed: " + multipartUpload, e);
 		}
+	}
+
+	@Override
+	public void setMultipartUploadSize(long multipartUploadSize) {
+		checkArgument(multipartUploadSize >= 5 * MB && multipartUploadSize <= 5 * GB, "Multipart upload size must be between 5MB and 5GB");
+		this.multipartUploadSize = multipartUploadSize;
 	}
 
 	@Override

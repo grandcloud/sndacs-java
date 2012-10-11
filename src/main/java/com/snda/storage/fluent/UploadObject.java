@@ -39,6 +39,8 @@ public interface UploadObject {
 
 	UploadObject expires(String expires);
 
+	UploadObject multipartUploadSize(long multipartUploadSize);
+	
 	UploadObject partSize(long partSize);
 	
 	UploadObject entity(Entity entity);

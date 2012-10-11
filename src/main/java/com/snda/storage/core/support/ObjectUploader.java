@@ -12,6 +12,8 @@ public interface ObjectUploader {
 
 	UploadObjectResult putObject(String bucket, String key, UploadObjectRequest putObjectRequest);
 
+	void setMultipartUploadSize(long multipartUploadSize);
+
 	void setPartSize(long uploadPartSize);
 
 }

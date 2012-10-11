@@ -47,6 +47,12 @@ class UploadObjectImpl implements UploadObject {
 	}
 
 	@Override
+	public UploadObject multipartUploadSize(long multipartUploadSize) {
+		objectUploader.setMultipartUploadSize(multipartUploadSize);
+		return this;
+	}
+
+	@Override
 	public UploadObject partSize(long partSize) {
 		objectUploader.setPartSize(partSize);
 		return this;

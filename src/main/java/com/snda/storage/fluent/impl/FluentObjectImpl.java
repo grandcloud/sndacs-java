@@ -203,6 +203,11 @@ class FluentObjectImpl implements FluentObject {
 	}
 
 	@Override
+	public UploadObject multipartUploadSize(long multipartUploadSize) {
+		return newPutObject().multipartUploadSize(multipartUploadSize);
+	}
+
+	@Override
 	public UploadObject partSize(long partSize) {
 		return newPutObject().partSize(partSize);
 	}

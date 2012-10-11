@@ -235,6 +235,7 @@ public class MultipartObjectUploaderTest {
 	@Before
 	public void setUp() {
 		multipartObjectUploader = new MultipartObjectUploader(client);
+		multipartObjectUploader.setMultipartUploadSize(5 * MB);
 		multipartObjectUploader.setPartSize(5 * MB);
 		bucket = "testbucket";
 		key = "1234567890";
