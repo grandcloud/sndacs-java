@@ -191,13 +191,19 @@ storage.bucket("mybucket").object("book/english.txt").
 	replaceMetadata().
 	contentType("text/plain").
 	metadata("x-snda-meta-author", "Jack Jackson").
-	update();
+	copy();
 ```
 ## Bucket Policy
 盛大云存储SDK提供了强大的Bucket Policy构建器，开发者可以轻易生成和设置所需要的Bucket Policy。
 
+加入静态引入
+```java
+import static com.snda.storage.policy.fluent.impl.Conditions.*
+```
+
 允许匿名用户下载该Bucket中key以public作为前缀的所有Object，同时限定User-Agent为Android或IOS，防盗链Referer设置为*.mycompany.com/*
 ```java
+
 Statement statement = Statement.allow().anyone().perform("snda:GetObject").to("srn:snda:storage:::mybucket/public/*").
 	where(userAgent().equals("Android", "IOS")).
 	and(referer().equals("*.mycompany.com/*")).
