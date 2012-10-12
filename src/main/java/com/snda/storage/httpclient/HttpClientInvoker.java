@@ -7,6 +7,7 @@ import static com.snda.storage.httpclient.HttpResponseAdapter.adaptHeaders;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -23,9 +24,15 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.net.HttpHeaders;
 import com.snda.storage.Entity;
 import com.snda.storage.SNDAServiceException;
+import com.snda.storage.authorization.CanonicalizableRequest;
+import com.snda.storage.authorization.Canonicalization;
+import com.snda.storage.authorization.HmacSHA1;
+import com.snda.storage.core.Credential;
 import com.snda.storage.core.SNDAHeaders;
+import com.snda.storage.core.support.CanonicalizableRequestAdapter;
 import com.snda.storage.core.support.Error;
 import com.snda.storage.core.support.HttpInvoker;
 import com.snda.storage.core.support.Request;
@@ -90,10 +97,21 @@ public class HttpClientInvoker implements HttpInvoker {
 	private HttpUriRequest createHTTPRequest(Request request) {
 		HttpUriRequest httpRequest = HttpRequestCreator.create(request.getMethod(), request.buildURI());
 		setHeaders(httpRequest, request.getHeaders());
+		if (request.getCredential() != null) {
+			httpRequest.addHeader(HttpHeaders.AUTHORIZATION, sign(request.getCredential(), new CanonicalizableRequestAdapter(request)).toString());
+		}
 		setEntity(httpRequest, request.getEntity());
 		return httpRequest;
 	}
 
+	private String sign(Credential credential, CanonicalizableRequest request) {
+		String stringToSign = Canonicalization.canonicalize(request);
+		LOGGER.debug("StringToSign: {}", stringToSign);
+		String signature = HmacSHA1.calculate(credential.getSecretAccessKey(), stringToSign);
+		LOGGER.debug("Singature: {}", signature);
+		return MessageFormat.format("SNDA {0}:{1}", credential.getAccessKeyId(), signature);
+	}
+	
 	private HttpResponse execute(HttpUriRequest request, HttpContext context) {
 		try {
 			return client.execute(URIUtils.extractHost(request.getURI()), request, context);

@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import org.apache.http.client.utils.URIBuilder;
 
 import com.google.common.collect.Maps;
+import com.snda.storage.core.Credential;
 import com.snda.storage.core.ValueObject;
 
 /**
@@ -25,6 +26,7 @@ public class Request extends ValueObject {
 	private Object entity;
 	private String bucket;
 	private String key;
+	private Credential credential;
 	private Map<String, Object> parameters = Maps.newLinkedHashMap();
 	private Map<String, Object> headers = Maps.newLinkedHashMap();
 	
@@ -75,6 +77,11 @@ public class Request extends ValueObject {
 		return this;
 	}
 
+	public Request withCredential(Credential credential) {
+		setCredential(credential);
+		return this;
+	}
+	
 	public Request withParameter(String name, Object value) {
 		checkNotNull(name);
 		if (value != null) {
@@ -159,6 +166,14 @@ public class Request extends ValueObject {
 
 	public void setKey(String key) {
 		this.key = key;
+	}
+
+	public Credential getCredential() {
+		return credential;
+	}
+
+	public void setCredential(Credential credential) {
+		this.credential = credential;
 	}
 
 	public Map<String, Object> getParameters() {

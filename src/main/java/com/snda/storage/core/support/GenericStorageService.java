@@ -1,16 +1,60 @@
 package com.snda.storage.core.support;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Maps.filterKeys;
+import static com.google.common.net.HttpHeaders.CACHE_CONTROL;
+import static com.google.common.net.HttpHeaders.CONTENT_DISPOSITION;
+import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
+import static com.google.common.net.HttpHeaders.CONTENT_LENGTH;
+import static com.google.common.net.HttpHeaders.CONTENT_MD5;
+import static com.google.common.net.HttpHeaders.CONTENT_RANGE;
+import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
+import static com.google.common.net.HttpHeaders.ETAG;
+import static com.google.common.net.HttpHeaders.EXPIRES;
+import static com.google.common.net.HttpHeaders.IF_MATCH;
+import static com.google.common.net.HttpHeaders.IF_MODIFIED_SINCE;
+import static com.google.common.net.HttpHeaders.IF_NONE_MATCH;
+import static com.google.common.net.HttpHeaders.IF_UNMODIFIED_SINCE;
+import static com.google.common.net.HttpHeaders.LAST_MODIFIED;
+import static com.google.common.net.HttpHeaders.RANGE;
+import static com.snda.storage.core.ContentRange.parseContentRange;
+import static com.snda.storage.core.SNDAHeaders.COPY_SOURCE;
+import static com.snda.storage.core.SNDAHeaders.COPY_SOURCE_IF_MATCH;
+import static com.snda.storage.core.SNDAHeaders.COPY_SOURCE_IF_MODIFIED_SINCE;
+import static com.snda.storage.core.SNDAHeaders.COPY_SOURCE_IF_NONE_MATCH;
+import static com.snda.storage.core.SNDAHeaders.COPY_SOURCE_IF_UNMODIFIED_SINCE;
+import static com.snda.storage.core.SNDAHeaders.COPY_SOURCE_RANGE;
+import static com.snda.storage.core.SNDAHeaders.EXPIRATION_DAYS;
+import static com.snda.storage.core.SNDAHeaders.METADATA_DIRECTIVE;
+import static com.snda.storage.core.SNDAHeaders.META_PREFIX;
+import static com.snda.storage.core.SNDAHeaders.STORAGE_CLASS;
+import static com.snda.storage.core.SNDAParameters.DELIMITER;
+import static com.snda.storage.core.SNDAParameters.KEY_MARKER;
+import static com.snda.storage.core.SNDAParameters.MARKER;
+import static com.snda.storage.core.SNDAParameters.MAX_KEYS;
+import static com.snda.storage.core.SNDAParameters.MAX_PARTS;
+import static com.snda.storage.core.SNDAParameters.MAX_UPLOADS;
+import static com.snda.storage.core.SNDAParameters.PART_NUMBER;
+import static com.snda.storage.core.SNDAParameters.PART_NUMBER_MARKER;
+import static com.snda.storage.core.SNDAParameters.POLICY;
+import static com.snda.storage.core.SNDAParameters.PREFIX;
+import static com.snda.storage.core.SNDAParameters.RESPONSE_CACHE_CONTROL;
+import static com.snda.storage.core.SNDAParameters.RESPONSE_CONTENT_DISPOSITION;
+import static com.snda.storage.core.SNDAParameters.RESPONSE_CONTENT_ENCODING;
+import static com.snda.storage.core.SNDAParameters.RESPONSE_CONTENT_LANGUAGE;
+import static com.snda.storage.core.SNDAParameters.RESPONSE_CONTENT_TYPE;
+import static com.snda.storage.core.SNDAParameters.RESPONSE_EXPIRES;
+import static com.snda.storage.core.SNDAParameters.UPLOADS;
+import static com.snda.storage.core.SNDAParameters.UPLOAD_ID;
+import static com.snda.storage.core.SNDAParameters.UPLOAD_ID_MARKER;
 import static com.snda.storage.core.support.HttpDateTimeFormatter.formatDateTime;
 import static com.snda.storage.core.support.HttpDateTimeFormatter.parseDateTime;
-import static com.snda.storage.core.ContentRange.parseContentRange;
-import static com.google.common.net.HttpHeaders.*;
-import static com.snda.storage.core.SNDAHeaders.*;
-import static com.snda.storage.core.SNDAParameters.*;
-import static com.snda.storage.core.support.Method.*;
+import static com.snda.storage.core.support.Method.DELETE;
+import static com.snda.storage.core.support.Method.GET;
+import static com.snda.storage.core.support.Method.HEAD;
+import static com.snda.storage.core.support.Method.POST;
+import static com.snda.storage.core.support.Method.PUT;
 
 import java.io.File;
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -32,9 +76,6 @@ import com.snda.storage.Location;
 import com.snda.storage.SNDAObject;
 import com.snda.storage.SNDAObjectMetadata;
 import com.snda.storage.SNDAServiceException;
-import com.snda.storage.authorization.CanonicalizableRequest;
-import com.snda.storage.authorization.Canonicalization;
-import com.snda.storage.authorization.HmacSHA1;
 import com.snda.storage.core.Condition;
 import com.snda.storage.core.CopyObjectRequest;
 import com.snda.storage.core.CopyPartRequest;
@@ -453,7 +494,11 @@ public class GenericStorageService implements StorageService {
 	}
 
 	private Request serviceRequest(Location location) {
-		return new Request().withScheme(scheme).withEndpoint(location.getEndpoint());
+		return new Request().
+				withCredential(credential).
+				withScheme(scheme).
+				withEndpoint(location.getEndpoint()).
+				withHeader(HttpHeaders.DATE, HttpDateTimeFormatter.formatDateTime(now()));
 	}
 
 	private void invoke(Request request) {
@@ -461,22 +506,10 @@ public class GenericStorageService implements StorageService {
 	}
 	
 	private <T> T invoke(Request request, Class<T> type) {
-		request.getHeaders().put(HttpHeaders.DATE, HttpDateTimeFormatter.formatDateTime(now()));
-		if (credential != null) {
-			request.getHeaders().put(HttpHeaders.AUTHORIZATION, sign(credential, new CanonicalizableRequestAdapter(request)));
-		}
 		LOGGER.info("Invoke {} with return {}", request, type);
 		T response = invoker.invoke(request, type);
 		LOGGER.info("Return {}", response);
 		return response;
-	}
-
-	private String sign(Credential credential, CanonicalizableRequest request) {
-		String stringToSign = Canonicalization.canonicalize(request);
-		LOGGER.debug("StringToSign: {}", stringToSign);
-		String signature = HmacSHA1.calculate(credential.getSecretAccessKey(), stringToSign);
-		LOGGER.debug("Singature: {}", signature);
-		return MessageFormat.format("SNDA {0}:{1}", credential.getAccessKeyId(), signature);
 	}
 
 	protected DateTime now() {
