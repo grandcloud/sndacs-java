@@ -135,7 +135,7 @@ public class GenericStorageService implements StorageService {
 
 	@Override
 	public ListAllMyBucketsResult listBuckets() {
-		return invoke(serviceRequest(Location.PREFERRED).withMethod(GET), ListAllMyBucketsResult.class);
+		return invoke(serviceRequest(Location.PREFERRED).method(GET), ListAllMyBucketsResult.class);
 	}
 
 	@Override
@@ -151,9 +151,9 @@ public class GenericStorageService implements StorageService {
 			createBucketConfiguration.setLocationConstraint(Location.PREFERRED);
 		}
 		invoke(serviceRequest(createBucketConfiguration.getLocationConstraint()).
-				withBucket(bucket).
-				withMethod(PUT).
-				withEntity(createBucketConfiguration));
+				bucket(bucket).
+				method(PUT).
+				entity(createBucketConfiguration));
 		locations.put(bucket, createBucketConfiguration.getLocationConstraint());
 	}
 
@@ -167,11 +167,11 @@ public class GenericStorageService implements StorageService {
 		checkNotNull(bucket);
 		checkNotNull(criteria);
 		return invoke(bucketRequest(bucket).
-				withParameter(DELIMITER, criteria.getDelimiter()).
-				withParameter(PREFIX, criteria.getPrefix()).
-				withParameter(MARKER, criteria.getMarker()).
-				withParameter(MAX_KEYS, criteria.getMaxKeys()).
-				withMethod(GET),
+				parameter(DELIMITER, criteria.getDelimiter()).
+				parameter(PREFIX, criteria.getPrefix()).
+				parameter(MARKER, criteria.getMarker()).
+				parameter(MAX_KEYS, criteria.getMaxKeys()).
+				method(GET),
 				ListBucketResult.class);
 	}
 	
@@ -185,20 +185,20 @@ public class GenericStorageService implements StorageService {
 		checkNotNull(bucket);
 		checkNotNull(criteria);
 		return invoke(bucketRequest(bucket).
-				withSubResource(UPLOADS).
-				withParameter(DELIMITER, criteria.getDelimiter()).
-				withParameter(PREFIX, criteria.getPrefix()).
-				withParameter(KEY_MARKER, criteria.getKeyMarker()).
-				withParameter(UPLOAD_ID_MARKER, criteria.getUploadIdMarker()).
-				withParameter(MAX_UPLOADS, criteria.getMaxUploads()).
-				withMethod(GET),
+				subResource(UPLOADS).
+				parameter(DELIMITER, criteria.getDelimiter()).
+				parameter(PREFIX, criteria.getPrefix()).
+				parameter(KEY_MARKER, criteria.getKeyMarker()).
+				parameter(UPLOAD_ID_MARKER, criteria.getUploadIdMarker()).
+				parameter(MAX_UPLOADS, criteria.getMaxUploads()).
+				method(GET),
 				ListMultipartUploadsResult.class);
 	}
 
 	@Override
 	public boolean doesBucketExist(String bucket) {
 		try {
-			invoke(bucketRequest(bucket).withMethod(HEAD), Void.class);
+			invoke(bucketRequest(bucket).method(HEAD), Void.class);
 			return true;
 		} catch (SNDAServiceException e) {
 			if (e.getStatus() == 404) {
@@ -220,9 +220,9 @@ public class GenericStorageService implements StorageService {
 	private Location doGetBucketLocation(String bucket) {
 		checkNotNull(bucket);
 		return invoke(serviceRequest(Location.PREFERRED).
-				withBucket(bucket).
-				withSubResource(SNDAParameters.LOCATION).
-				withMethod(GET),
+				bucket(bucket).
+				subResource(SNDAParameters.LOCATION).
+				method(GET),
 				LocationConstraint.class).
 				getValue();
 	}
@@ -235,7 +235,7 @@ public class GenericStorageService implements StorageService {
 
 	private void doDeleteBucket(String bucket) {
 		checkNotNull(bucket);
-		invoke(bucketRequest(bucket).withMethod(DELETE));
+		invoke(bucketRequest(bucket).method(DELETE));
 	}
 
 	@Override
@@ -243,31 +243,31 @@ public class GenericStorageService implements StorageService {
 		checkNotNull(bucket);
 		checkNotNull(policy);
 		invoke(bucketRequest(bucket).
-				withMethod(PUT).
-				withSubResource(POLICY).
-				withEntity(policy));
+				method(PUT).
+				subResource(POLICY).
+				entity(policy));
 	}
 
 	@Override
 	public Policy getBucketPolicy(String bucket) {
 		checkNotNull(bucket);
 		return invoke(bucketRequest(bucket).
-				withSubResource(POLICY).
-				withMethod(GET),
+				subResource(POLICY).
+				method(GET),
 				Policy.class);
 	}
 
 	@Override
 	public void deleteBucketPolicy(String bucket) {
 		checkNotNull(bucket);
-		invoke(bucketRequest(bucket).withSubResource(POLICY).withMethod(DELETE));
+		invoke(bucketRequest(bucket).subResource(POLICY).method(DELETE));
 	}
 
 	@Override
 	public void deleteObject(String bucket, String key) {
 		checkNotNull(bucket);
 		checkNotNull(key);
-		invoke(objectRequest(bucket, key).withMethod(DELETE));
+		invoke(objectRequest(bucket, key).method(DELETE));
 	}
 
 	@Override
@@ -280,7 +280,7 @@ public class GenericStorageService implements StorageService {
 		checkNotNull(bucket);
 		checkNotNull(key);
 		checkNotNull(getObjectRequest);
-		Response response = invoke(objectGetRequest(bucket, key, getObjectRequest).withMethod(GET),
+		Response response = invoke(objectGetRequest(bucket, key, getObjectRequest).method(GET),
 				Response.class);
 		return new SNDAObject().
 				withBucket(bucket).
@@ -301,7 +301,7 @@ public class GenericStorageService implements StorageService {
 		checkNotNull(getObjectRequest);
 		Response response = null;
 		try {
-			response = invoke(objectGetRequest(bucket, key, getObjectRequest).withMethod(HEAD), Response.class);
+			response = invoke(objectGetRequest(bucket, key, getObjectRequest).method(HEAD), Response.class);
 			return newObjectMetadata(response.getHeaders());
 		} finally {
 			Closeables.closeQuietly(response);
@@ -322,9 +322,9 @@ public class GenericStorageService implements StorageService {
 		Response response = null;
 		try {
 			response = invoke(objectCreateRequest(bucket, key, putObjectRequest.getObjectCreation()).
-					withHeader(CONTENT_MD5, putObjectRequest.getContentMD5()).
-					withMethod(PUT).
-					withEntity(entity),
+					header(CONTENT_MD5, putObjectRequest.getContentMD5()).
+					method(PUT).
+					entity(entity),
 					Response.class);
 			return new UploadObjectResult(response.getHeaders().get(ETAG));
 		} finally {
@@ -339,13 +339,13 @@ public class GenericStorageService implements StorageService {
 		checkNotNull(copyObjectRequest);
 		Condition copyCondition = copyObjectRequest.getCopyCondition();
 		return invoke(objectCreateRequest(bucket, key, copyObjectRequest.getObjectCreation()).
-				withHeader(COPY_SOURCE, copyObjectRequest.getCopySource()).
-				withHeader(COPY_SOURCE_IF_MATCH, copyCondition.getIfMatch()).
-				withHeader(COPY_SOURCE_IF_NONE_MATCH, copyCondition.getIfNoneMatch()).
-				withHeader(COPY_SOURCE_IF_MODIFIED_SINCE, copyCondition.getIfModifiedSince()).
-				withHeader(COPY_SOURCE_IF_UNMODIFIED_SINCE, copyCondition.getIfUnmodifiedSince()).
-				withHeader(METADATA_DIRECTIVE, copyObjectRequest.getMetadataDirective()).
-				withMethod(PUT),
+				header(COPY_SOURCE, copyObjectRequest.getCopySource()).
+				header(COPY_SOURCE_IF_MATCH, copyCondition.getIfMatch()).
+				header(COPY_SOURCE_IF_NONE_MATCH, copyCondition.getIfNoneMatch()).
+				header(COPY_SOURCE_IF_MODIFIED_SINCE, copyCondition.getIfModifiedSince()).
+				header(COPY_SOURCE_IF_UNMODIFIED_SINCE, copyCondition.getIfUnmodifiedSince()).
+				header(METADATA_DIRECTIVE, copyObjectRequest.getMetadataDirective()).
+				method(PUT),
 				CopyObjectResult.class);
 	}
 
@@ -355,8 +355,8 @@ public class GenericStorageService implements StorageService {
 		checkNotNull(key);
 		checkNotNull(objectCreation);
 		return invoke(objectCreateRequest(bucket, key, objectCreation).
-				withSubResource(UPLOADS).
-				withMethod(POST),
+				subResource(UPLOADS).
+				method(POST),
 				InitiateMultipartUploadResult.class);
 	}
 
@@ -372,9 +372,9 @@ public class GenericStorageService implements StorageService {
 		checkNotNull(uploadId);
 		checkNotNull(criteria);
 		return invoke(multipartUploadRequest(bucket, key, uploadId).
-				withParameter(MAX_PARTS, criteria.getMaxParts()).
-				withParameter(PART_NUMBER_MARKER, criteria.getPartNumberMarker()).
-				withMethod(GET),
+				parameter(MAX_PARTS, criteria.getMaxParts()).
+				parameter(PART_NUMBER_MARKER, criteria.getPartNumberMarker()).
+				method(GET),
 				ListPartsResult.class);
 	}
 
@@ -388,10 +388,10 @@ public class GenericStorageService implements StorageService {
 		Response response = null;
 		try {
 			response = invoke(multipartUploadRequest(bucket, key, uploadId).
-					withParameter(PART_NUMBER, String.valueOf(partNumber)).
-					withHeader(CONTENT_MD5, uploadPartRequest.getContentMD5()).
-					withEntity(entity).
-					withMethod(PUT),
+					parameter(PART_NUMBER, String.valueOf(partNumber)).
+					header(CONTENT_MD5, uploadPartRequest.getContentMD5()).
+					entity(entity).
+					method(PUT),
 					Response.class);
 			return new UploadPartResult(response.getHeaders().get(ETAG));
 		} finally {
@@ -407,28 +407,28 @@ public class GenericStorageService implements StorageService {
 		checkNotNull(copyPartRequest);
 		Condition copyCondition = copyPartRequest.getCopyCondition();
 		return invoke(multipartUploadRequest(bucket, key, uploadId).
-				withParameter(PART_NUMBER, String.valueOf(partNumber)).
-				withHeader(COPY_SOURCE, copyPartRequest.getCopySource()).
-				withHeader(COPY_SOURCE_RANGE, copyPartRequest.getCopySourceRange()).
-				withHeader(COPY_SOURCE_IF_MATCH, copyCondition.getIfMatch()).
-				withHeader(COPY_SOURCE_IF_NONE_MATCH, copyCondition.getIfNoneMatch()).
-				withHeader(COPY_SOURCE_IF_MODIFIED_SINCE, formatDateTime(copyCondition.getIfModifiedSince())).
-				withHeader(COPY_SOURCE_IF_UNMODIFIED_SINCE, formatDateTime(copyCondition.getIfUnmodifiedSince())).
-				withMethod(PUT),
+				parameter(PART_NUMBER, String.valueOf(partNumber)).
+				header(COPY_SOURCE, copyPartRequest.getCopySource()).
+				header(COPY_SOURCE_RANGE, copyPartRequest.getCopySourceRange()).
+				header(COPY_SOURCE_IF_MATCH, copyCondition.getIfMatch()).
+				header(COPY_SOURCE_IF_NONE_MATCH, copyCondition.getIfNoneMatch()).
+				header(COPY_SOURCE_IF_MODIFIED_SINCE, formatDateTime(copyCondition.getIfModifiedSince())).
+				header(COPY_SOURCE_IF_UNMODIFIED_SINCE, formatDateTime(copyCondition.getIfUnmodifiedSince())).
+				method(PUT),
 				CopyPartResult.class);
 	}
 
 	@Override
 	public CompleteMultipartUploadResult completeMultipartUpload(String bucket, String key, String uploadId, List<Part> parts) {
 		return invoke(multipartUploadRequest(bucket, key, uploadId).
-				withMethod(POST).
-				withEntity(new CompleteMultipartUpload(parts)), 
+				method(POST).
+				entity(new CompleteMultipartUpload(parts)), 
 				CompleteMultipartUploadResult.class);
 	}
 
 	@Override
 	public void abortMultipartUpload(String bucket, String key, String uploadId) {
-		invoke(multipartUploadRequest(bucket, key, uploadId).withMethod(DELETE));
+		invoke(multipartUploadRequest(bucket, key, uploadId).method(DELETE));
 	}
 	
 	private SNDAObjectMetadata newObjectMetadata(Map<String, String> headers) {
@@ -451,61 +451,62 @@ public class GenericStorageService implements StorageService {
 				}));
 	}
 	
-	private Request objectCreateRequest(String bucket, String key, ObjectCreation objectCreation) {
+	private Request.Builder objectCreateRequest(String bucket, String key, ObjectCreation objectCreation) {
 		return objectRequest(bucket, key).
-				withHeader(CACHE_CONTROL, objectCreation.getCacheControl()).
-				withHeader(CONTENT_DISPOSITION, objectCreation.getContentDisposition()).
-				withHeader(CONTENT_ENCODING, objectCreation.getContentEncoding()).
-				withHeader(CONTENT_TYPE, objectCreation.getContentType()).
-				withHeader(EXPIRES, objectCreation.getExpires()).
-				withHeader(STORAGE_CLASS, objectCreation.getStorageClass()).
-				withHeader(EXPIRATION_DAYS, objectCreation.getExpirationDays()).
-				withHeaders(objectCreation.getMetadata());
+				header(CACHE_CONTROL, objectCreation.getCacheControl()).
+				header(CONTENT_DISPOSITION, objectCreation.getContentDisposition()).
+				header(CONTENT_ENCODING, objectCreation.getContentEncoding()).
+				header(CONTENT_TYPE, objectCreation.getContentType()).
+				header(EXPIRES, objectCreation.getExpires()).
+				header(STORAGE_CLASS, objectCreation.getStorageClass()).
+				header(EXPIRATION_DAYS, objectCreation.getExpirationDays()).
+				headers(objectCreation.getMetadata());
 	}
 	
-	private Request objectGetRequest(String bucket, String key, GetObjectRequest getObjectRequest) {
+	private Request.Builder objectGetRequest(String bucket, String key, GetObjectRequest getObjectRequest) {
 		ResponseOverride responseOverride = getObjectRequest.getResponseOverride();
 		Condition condition = getObjectRequest.getCondition();
 		return objectRequest(bucket, key).
-				withParameter(RESPONSE_CONTENT_TYPE, responseOverride.getContentType()).
-				withParameter(RESPONSE_CONTENT_LANGUAGE, responseOverride.getContentLanguage()).
-				withParameter(RESPONSE_EXPIRES, responseOverride.getExpires()).
-				withParameter(RESPONSE_CACHE_CONTROL, responseOverride.getCacheControl()).
-				withParameter(RESPONSE_CONTENT_DISPOSITION, responseOverride.getContentDisposition()).
-				withParameter(RESPONSE_CONTENT_ENCODING, responseOverride.getContentEncoding()).
-				withHeader(RANGE, getObjectRequest.getRange()).
-				withHeader(IF_MATCH, condition.getIfMatch()).
-				withHeader(IF_NONE_MATCH, condition.getIfNoneMatch()).
-				withHeader(IF_MODIFIED_SINCE, formatDateTime(condition.getIfModifiedSince())).
-				withHeader(IF_UNMODIFIED_SINCE, formatDateTime(condition.getIfUnmodifiedSince()));
+				parameter(RESPONSE_CONTENT_TYPE, responseOverride.getContentType()).
+				parameter(RESPONSE_CONTENT_LANGUAGE, responseOverride.getContentLanguage()).
+				parameter(RESPONSE_EXPIRES, responseOverride.getExpires()).
+				parameter(RESPONSE_CACHE_CONTROL, responseOverride.getCacheControl()).
+				parameter(RESPONSE_CONTENT_DISPOSITION, responseOverride.getContentDisposition()).
+				parameter(RESPONSE_CONTENT_ENCODING, responseOverride.getContentEncoding()).
+				header(RANGE, getObjectRequest.getRange()).
+				header(IF_MATCH, condition.getIfMatch()).
+				header(IF_NONE_MATCH, condition.getIfNoneMatch()).
+				header(IF_MODIFIED_SINCE, formatDateTime(condition.getIfModifiedSince())).
+				header(IF_UNMODIFIED_SINCE, formatDateTime(condition.getIfUnmodifiedSince()));
 	}
 	
-	private Request multipartUploadRequest(String bucket, String key, String uploadId) {
-		return objectRequest(bucket, key).withParameter(UPLOAD_ID, uploadId);
+	private Request.Builder multipartUploadRequest(String bucket, String key, String uploadId) {
+		return objectRequest(bucket, key).parameter(UPLOAD_ID, uploadId);
 	}
 
-	private Request objectRequest(String bucket, String key) {
-		return bucketRequest(bucket).withKey(key);
+	private Request.Builder objectRequest(String bucket, String key) {
+		return bucketRequest(bucket).key(key);
 	}
 
-	private Request bucketRequest(String bucket) {
+	private Request.Builder bucketRequest(String bucket) {
 		Location location = getBucketLocation(bucket);
-		return serviceRequest(location).withBucket(bucket);
+		return serviceRequest(location).bucket(bucket);
 	}
 
-	private Request serviceRequest(Location location) {
-		return new Request().
-				withCredential(credential).
-				withScheme(scheme).
-				withEndpoint(location.getEndpoint()).
-				withHeader(HttpHeaders.DATE, HttpDateTimeFormatter.formatDateTime(now()));
+	private Request.Builder serviceRequest(Location location) {
+		return Request.builder().
+				credential(credential).
+				scheme(scheme).
+				endpoint(location.getEndpoint()).
+				header(HttpHeaders.DATE, HttpDateTimeFormatter.formatDateTime(now()));
 	}
 
-	private void invoke(Request request) {
+	private void invoke(Request.Builder request) {
 		invoke(request, Void.class);
 	}
 	
-	private <T> T invoke(Request request, Class<T> type) {
+	private <T> T invoke(Request.Builder builder, Class<T> type) {
+		Request request = builder.build();
 		LOGGER.info("Invoke {} with return {}", request, type);
 		T response = invoker.invoke(request, type);
 		LOGGER.info("Return {}", response);

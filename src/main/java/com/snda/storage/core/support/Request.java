@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import org.apache.http.client.utils.URIBuilder;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.snda.storage.core.Credential;
 import com.snda.storage.core.ValueObject;
@@ -20,176 +21,165 @@ import com.snda.storage.core.ValueObject;
  */
 public class Request extends ValueObject {
 
-	private Scheme scheme = Scheme.HTTP;
-	private String endpoint;
-	private Method method;
-	private Object entity;
-	private String bucket;
-	private String key;
-	private Credential credential;
-	private Map<String, Object> parameters = Maps.newLinkedHashMap();
-	private Map<String, Object> headers = Maps.newLinkedHashMap();
+	private final Method method;
+	private final URI uri;
+	private final Object entity;
+	private final Credential credential;
+	private final Map<String, Object> parameters;
+	private final Map<String, Object> headers;
 	
-	public URI buildURI() {
-		URIBuilder builder = new URIBuilder().
-				setScheme(getScheme().toString()).
-				setHost(getEndpoint());
-		String path = new ObjectPathBuilder().bucket(bucket).key(key).build();
+	public static Builder builder() {
+		return new Builder();
+	}
+	
+	private Request(Builder builder) {
+		checkNotNull(builder.method, "method");
+		checkNotNull(builder.endpoint, "endpoint");
+		this.uri = buildURI(builder);
+		this.method = builder.method;
+		this.credential = builder.credential;
+		this.entity = builder.entity;
+		this.parameters = ImmutableMap.copyOf(builder.parameters);
+		this.headers = ImmutableMap.copyOf(builder.headers);
+	}
+	
+	private static URI buildURI(Builder builder) {
+		checkNotNull(builder.endpoint);
+		URIBuilder uriBuilder = new URIBuilder().
+				setScheme(Scheme.nullToDefault(builder.scheme).toString()).
+				setHost(builder.endpoint);
+		String path = new ObjectPathBuilder().bucket(builder.bucket).key(builder.key).build();
 		if (isNotBlank(path)) {
-			builder.setPath("/" + path.toString());
+			uriBuilder.setPath("/" + path.toString());
 		}
-		for (Entry<String, Object> each : getParameters().entrySet()) {
-			builder.addParameter(each.getKey(), toString(each.getValue()));
+		if (builder.subResource != null) {
+			uriBuilder.addParameter(builder.subResource, null);
+		}
+		for (Entry<String, Object> each : builder.parameters.entrySet()) {
+			uriBuilder.addParameter(each.getKey(), toString(each.getValue()));
 		}
 		try {
-			return builder.build();
+			return uriBuilder.build();
 		} catch (URISyntaxException e) {
 			throw new IllegalStateException(e);
 		}
 	}
-
-	private String toString(Object value) {
-		return value == null ? null : value.toString();
-	}
-
-	public Request withScheme(Scheme scheme) {
-		setScheme(scheme);
-		return this;
-	}
-
-	public Request withEndpoint(String endpoint) {
-		setEndpoint(endpoint);
-		return this;
-	}
-
-	public Request withBucket(String bucket) {
-		setBucket(bucket);
-		return this;
-	}
 	
-	public Request withKey(String key) {
-		setKey(key);
-		return this;
-	}
-
-	public Request withSubResource(String subResource) {
-		getParameters().put(subResource, null);
-		return this;
-	}
-
-	public Request withCredential(Credential credential) {
-		setCredential(credential);
-		return this;
-	}
-	
-	public Request withParameter(String name, Object value) {
-		checkNotNull(name);
-		if (value != null) {
-			getParameters().put(name, value.toString());
-		}
-		return this;
-	}
-
-	public Request withParameters(Map<String, Object> parameters) {
-		checkNotNull(parameters);
-		getParameters().putAll(parameters);
-		return this;
-	}
-
-	public Request withHeader(String name, Object value) {
-		checkNotNull(name);
-		if (value != null) {
-			getHeaders().put(name, value.toString());
-		}
-		return this;
-	}
-
-	public Request withHeaders(Map<String, Object> headers) {
-		checkNotNull(parameters);
-		getHeaders().putAll(headers);
-		return this;
-	}
-
-	public Request withMethod(Method method) {
-		setMethod(method);
-		return this;
-	}
-
-	public Request withEntity(Object entity) {
-		setEntity(entity);
-		return this;
-	}
-
-	public Scheme getScheme() {
-		return scheme;
-	}
-
-	public void setScheme(Scheme scheme) {
-		this.scheme = scheme;
-	}
-
-	public String getEndpoint() {
-		return endpoint;
-	}
-
-	public void setEndpoint(String endpoint) {
-		this.endpoint = endpoint;
-	}
-
 	public Method getMethod() {
 		return method;
 	}
 
-	public void setMethod(Method method) {
-		this.method = method;
+	public URI getURI() {
+		return uri;
 	}
 
 	public Object getEntity() {
 		return entity;
 	}
 
-	public void setEntity(Object entity) {
-		this.entity = entity;
-	}
-
-	public String getBucket() {
-		return bucket;
-	}
-
-	public void setBucket(String bucket) {
-		this.bucket = bucket;
-	}
-
-	public String getKey() {
-		return key;
-	}
-
-	public void setKey(String key) {
-		this.key = key;
-	}
-
 	public Credential getCredential() {
 		return credential;
-	}
-
-	public void setCredential(Credential credential) {
-		this.credential = credential;
 	}
 
 	public Map<String, Object> getParameters() {
 		return parameters;
 	}
 
-	public void setParameters(Map<String, Object> parameters) {
-		this.parameters = parameters;
-	}
-
 	public Map<String, Object> getHeaders() {
 		return headers;
 	}
-
-	public void setHeaders(Map<String, Object> headers) {
-		this.headers = headers;
+	
+	private static String toString(Object value) {
+		return value == null ? null : value.toString();
 	}
+	
+	public static class Builder {
+		
+		private Scheme scheme;
+		private String endpoint;
+		private Method method;
+		private Object entity;
+		private String bucket;
+		private String key;
+		private Credential credential;
+		private String subResource;
+		private Map<String, Object> parameters = Maps.newHashMap();
+		private Map<String, Object> headers = Maps.newHashMap();
+		
+		private Builder() {
+		}
+		
+		public Request build() {
+			return new Request(this);
+		}
+		
+		public Builder scheme(Scheme scheme) {
+			this.scheme = scheme;
+			return this;
+		}
 
+		public Builder endpoint(String endpoint) {
+			this.endpoint = endpoint;
+			return this;
+		}
+
+		public Builder bucket(String bucket) {
+			this.bucket = bucket;
+			return this;
+		}
+		
+		public Builder key(String key) {
+			this.key = key;
+			return this;
+		}
+		
+		public Builder credential(Credential credential) {
+			this.credential = credential;
+			return this;
+		}
+
+		public Builder subResource(String subResource) {
+			this.subResource = subResource;
+			return this;
+		}
+		
+		public Builder parameter(String name, Object value) {
+			checkNotNull(name);
+			if (value != null) {
+				this.parameters.put(name, value.toString());
+			}
+			return this;
+		}
+
+		public Builder parameters(Map<String, Object> parameters) {
+			checkNotNull(parameters);
+			this.parameters.putAll(parameters);
+			return this;
+		}
+
+		public Builder header(String name, Object value) {
+			checkNotNull(name);
+			if (value != null) {
+				this.headers.put(name, value.toString());
+			}
+			return this;
+		}
+
+		public Builder headers(Map<String, Object> headers) {
+			checkNotNull(headers);
+			this.headers.putAll(headers);
+			return this;
+		}
+
+		public Builder method(Method method) {
+			this.method = method;
+			return this;
+		}
+
+		public Builder entity(Object entity) {
+			this.entity = entity;
+			return this;
+		}
+		
+	}
 }

@@ -56,12 +56,13 @@ public class ObjectOperationTest {
 	@Test
 	public void testDeleteObject() {
 		client.deleteObject(bucket, key);
-		verify(invoker).invoke(new Request().
-				withMethod(Method.DELETE).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withKey(key).
-				withHeader("Date", formatDateTime(now)), 
+		verify(invoker).invoke(Request.builder().
+				method(Method.DELETE).
+				endpoint(endpoint).
+				bucket(bucket).
+				key(key).
+				header("Date", formatDateTime(now)).
+				build(), 
 				Void.class);
 	}
 	
@@ -77,12 +78,13 @@ public class ObjectOperationTest {
 					"x-snda-meta-name-2", "value2"));
 		when(response.getInputStream()).thenReturn(inputStream);
 		
-		when(invoker.invoke(new Request().
-				withMethod(Method.GET).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withKey(key).
-				withHeader("Date", formatDateTime(now)), 
+		when(invoker.invoke(Request.builder().
+				method(Method.GET).
+				endpoint(endpoint).
+				bucket(bucket).
+				key(key).
+				header("Date", formatDateTime(now)).
+				build(), 
 				Response.class)).thenReturn(response);
 		
 		
@@ -111,15 +113,16 @@ public class ObjectOperationTest {
 				"Content-Range", "bytes 10-20/123456789"));
 		when(response.getInputStream()).thenReturn(inputStream);
 		
-		when(invoker.invoke(new Request().
-				withMethod(Method.GET).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withKey(key).
-				withParameter("response-content-type", "application/xml").
-				withHeader("Range", "bytes=10-20").
-				withHeader("If-Match", "xxx").
-				withHeader("Date", formatDateTime(now)), 
+		when(invoker.invoke(Request.builder().
+				method(Method.GET).
+				endpoint(endpoint).
+				bucket(bucket).
+				key(key).
+				parameter("response-content-type", "application/xml").
+				header("Range", "bytes=10-20").
+				header("If-Match", "xxx").
+				header("Date", formatDateTime(now)).
+				build(), 
 				Response.class)).thenReturn(response);
 		
 		
@@ -151,15 +154,16 @@ public class ObjectOperationTest {
 				"x-snda-expiration-days", "15"));
 		when(response.getInputStream()).thenReturn(inputStream);
 		
-		when(invoker.invoke(new Request().
-				withMethod(Method.HEAD).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withKey(key).
-				withParameter("response-content-type", "application/xml").
-				withHeader("If-Match", "xxx").
-				withHeader("If-Modified-Since", formatDateTime(ifModifiedSince)).
-				withHeader("Date", formatDateTime(now)), 
+		when(invoker.invoke(Request.builder().
+				method(Method.HEAD).
+				endpoint(endpoint).
+				bucket(bucket).
+				key(key).
+				parameter("response-content-type", "application/xml").
+				header("If-Match", "xxx").
+				header("If-Modified-Since", formatDateTime(ifModifiedSince)).
+				header("Date", formatDateTime(now)).
+				build(), 
 				Response.class)).thenReturn(response);
 		
 		
@@ -182,19 +186,20 @@ public class ObjectOperationTest {
 		Entity entity = mock(Entity.class);
 		Response response = mock(Response.class);
 		when(response.getHeaders()).thenReturn(ImmutableMap.of("ETag", "1234567890"));
-		when(invoker.invoke(new Request().
-				withMethod(Method.PUT).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withKey(key).
-				withHeader("Cache-Control", "private").
-				withHeader("Content-Type", "text/html").
-				withHeader("Content-MD5", "MD").
-				withHeader("x-snda-storage-class", "REDUCED_REDUNDANCY").
-				withHeader("x-snda-meta-name-1", "value1").
-				withHeader("x-snda-meta-name-2", "value2").
-				withHeader("Date", formatDateTime(now)).
-				withEntity(entity), 
+		when(invoker.invoke(Request.builder().
+				method(Method.PUT).
+				endpoint(endpoint).
+				bucket(bucket).
+				key(key).
+				header("Cache-Control", "private").
+				header("Content-Type", "text/html").
+				header("Content-MD5", "MD").
+				header("x-snda-storage-class", "REDUCED_REDUNDANCY").
+				header("x-snda-meta-name-1", "value1").
+				header("x-snda-meta-name-2", "value2").
+				header("Date", formatDateTime(now)).
+				entity(entity).
+				build(), 
 				Response.class)).thenReturn(response);
 		
 		UploadObjectResult actual = client.uploadObject(bucket, key, new UploadObjectRequest().
@@ -213,14 +218,15 @@ public class ObjectOperationTest {
 	@Test
 	public void testCopyObject() {
 		CopyObjectResult expected = mock(CopyObjectResult.class);
-		when(invoker.invoke(new Request().
-				withMethod(Method.PUT).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withKey(key).
-				withHeader("x-snda-copy-source", "source-bucket/112233").
-				withHeader("x-snda-copy-source-if-match", "yyyy").
-				withHeader("Date", formatDateTime(now)), 
+		when(invoker.invoke(Request.builder().
+				method(Method.PUT).
+				endpoint(endpoint).
+				bucket(bucket).
+				key(key).
+				header("x-snda-copy-source", "source-bucket/112233").
+				header("x-snda-copy-source-if-match", "yyyy").
+				header("Date", formatDateTime(now)).
+				build(), 
 				CopyObjectResult.class)).thenReturn(expected);
 		
 		
@@ -233,17 +239,18 @@ public class ObjectOperationTest {
 	@Test
 	public void testCopyObjectWithReplaceMetadata() {
 		CopyObjectResult expected = mock(CopyObjectResult.class);
-		when(invoker.invoke(new Request().
-				withMethod(Method.PUT).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withKey(key).
-				withHeader("x-snda-copy-source", "source-bucket/112233").
-				withHeader("x-snda-copy-source-if-match", "yyyy").
-				withHeader("x-snda-metadata-directive", "REPLACE").
-				withHeader("Content-Type", "ttttt").
-				withHeader("x-snda-meta-name", "value").
-				withHeader("Date", formatDateTime(now)), 
+		when(invoker.invoke(Request.builder().
+				method(Method.PUT).
+				endpoint(endpoint).
+				bucket(bucket).
+				key(key).
+				header("x-snda-copy-source", "source-bucket/112233").
+				header("x-snda-copy-source-if-match", "yyyy").
+				header("x-snda-metadata-directive", "REPLACE").
+				header("Content-Type", "ttttt").
+				header("x-snda-meta-name", "value").
+				header("Date", formatDateTime(now)).
+				build(), 
 				CopyObjectResult.class)).thenReturn(expected);
 		
 		CopyObjectResult actual = client.copyObject(bucket, key, new CopyObjectRequest().

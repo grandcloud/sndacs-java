@@ -30,7 +30,7 @@ public class CanonicalizableRequestAdapter implements CanonicalizableRequest {
 
 	@Override
 	public String getUndecodedPath() {
-		return request.buildURI().getRawPath();
+		return request.getURI().getRawPath();
 	}
 
 	@Override

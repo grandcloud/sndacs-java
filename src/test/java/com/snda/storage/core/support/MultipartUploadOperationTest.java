@@ -64,16 +64,17 @@ public class MultipartUploadOperationTest {
 		
 		InitiateMultipartUploadResult expected = mock(InitiateMultipartUploadResult.class);
 		
-		when(invoker.invoke(new Request().
-				withMethod(Method.POST).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withKey(key).
-				withSubResource("uploads").
-				withHeader("x-snda-storage-class", "REDUCED_REDUNDANCY").
-				withHeader("Content-Type", "test/aaa").
-				withHeader("Expires", "xyz").
-				withHeader("Date", HttpDateTimeFormatter.formatDateTime(now)),
+		when(invoker.invoke(Request.builder().
+				method(Method.POST).
+				endpoint(endpoint).
+				bucket(bucket).
+				key(key).
+				subResource("uploads").
+				header("x-snda-storage-class", "REDUCED_REDUNDANCY").
+				header("Content-Type", "test/aaa").
+				header("Expires", "xyz").
+				header("Date", HttpDateTimeFormatter.formatDateTime(now)).
+				build(),
 				InitiateMultipartUploadResult.class)).thenReturn(expected);
 		
 		InitiateMultipartUploadResult actual = client.initiateMultipartUpload(bucket, key, objectCreation);
@@ -85,16 +86,17 @@ public class MultipartUploadOperationTest {
 		Entity entity = mock(Entity.class);
 		Response response = mock(Response.class);
 		when(response.getHeaders()).thenReturn(ImmutableMap.of("ETag", "etag1234567890"));
-		when(invoker.invoke(new Request().
-				withMethod(Method.PUT).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withKey(key).
-				withParameter("uploadId", uploadId).
-				withParameter("partNumber", "10").
-				withHeader("Content-MD5", "MD").
-				withHeader("Date", HttpDateTimeFormatter.formatDateTime(now)).
-				withEntity(entity),
+		when(invoker.invoke(Request.builder().
+				method(Method.PUT).
+				endpoint(endpoint).
+				bucket(bucket).
+				key(key).
+				parameter("uploadId", uploadId).
+				parameter("partNumber", "10").
+				header("Content-MD5", "MD").
+				header("Date", HttpDateTimeFormatter.formatDateTime(now)).
+				entity(entity).
+				build(),
 				Response.class)).thenReturn(response);
 		
 		UploadPartResult actual = client.uploadPart(bucket, key, uploadId, 10, new UploadPartRequest().
@@ -108,16 +110,17 @@ public class MultipartUploadOperationTest {
 	@Test
 	public void testCopyPart() throws IOException {
 		CopyPartResult expected = mock(CopyPartResult.class);
-		when(invoker.invoke(new Request().
-				withMethod(Method.PUT).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withKey(key).
-				withParameter("uploadId", uploadId).
-				withParameter("partNumber", "250").
-				withHeader("x-snda-copy-source", "mybucket/key1").
-				withHeader("x-snda-copy-source-range", "bytes=200-500").
-				withHeader("Date", HttpDateTimeFormatter.formatDateTime(now)),
+		when(invoker.invoke(Request.builder().
+				method(Method.PUT).
+				endpoint(endpoint).
+				bucket(bucket).
+				key(key).
+				parameter("uploadId", uploadId).
+				parameter("partNumber", "250").
+				header("x-snda-copy-source", "mybucket/key1").
+				header("x-snda-copy-source-range", "bytes=200-500").
+				header("Date", HttpDateTimeFormatter.formatDateTime(now)).
+				build(),
 				CopyPartResult.class)).thenReturn(expected);
 		
 		CopyPartResult actual = client.copyPart(bucket, key, uploadId, 250, new CopyPartRequest().
@@ -131,14 +134,15 @@ public class MultipartUploadOperationTest {
 	public void testCompleteMultipartUpload() {
 		List<Part> parts = mock(List.class);
 		CompleteMultipartUploadResult expected = mock(CompleteMultipartUploadResult.class);
-		when(invoker.invoke(new Request().
-				withMethod(Method.POST).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withKey(key).
-				withParameter("uploadId", uploadId).
-				withHeader("Date", HttpDateTimeFormatter.formatDateTime(now)).
-				withEntity(new CompleteMultipartUpload(parts)),
+		when(invoker.invoke(Request.builder().
+				method(Method.POST).
+				endpoint(endpoint).
+				bucket(bucket).
+				key(key).
+				parameter("uploadId", uploadId).
+				header("Date", HttpDateTimeFormatter.formatDateTime(now)).
+				entity(new CompleteMultipartUpload(parts)).
+				build(),
 				CompleteMultipartUploadResult.class)).thenReturn(expected);
 		
 		CompleteMultipartUploadResult actual = client.completeMultipartUpload(bucket, key, uploadId, parts);
@@ -149,27 +153,29 @@ public class MultipartUploadOperationTest {
 	public void testAbortMultipartUpload() {
 		client.abortMultipartUpload(bucket, key, uploadId);
 		
-		verify(invoker).invoke(new Request().
-				withMethod(Method.DELETE).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withKey(key).
-				withParameter("uploadId", uploadId).
-				withHeader("Date", HttpDateTimeFormatter.formatDateTime(now)), 
+		verify(invoker).invoke(Request.builder().
+				method(Method.DELETE).
+				endpoint(endpoint).
+				bucket(bucket).
+				key(key).
+				parameter("uploadId", uploadId).
+				header("Date", HttpDateTimeFormatter.formatDateTime(now)).
+				build(), 
 				Void.class);
 	}
 	
 	@Test
 	public void testListParts() {
 		ListPartsResult expected = mock(ListPartsResult.class);
-		when(invoker.invoke(new Request().
-				withMethod(Method.GET).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withKey(key).
-				withParameter("uploadId", uploadId).
-				withParameter("part-number-marker", 255).
-				withHeader("Date", HttpDateTimeFormatter.formatDateTime(now)), 
+		when(invoker.invoke(Request.builder().
+				method(Method.GET).
+				endpoint(endpoint).
+				bucket(bucket).
+				key(key).
+				parameter("uploadId", uploadId).
+				parameter("part-number-marker", 255).
+				header("Date", HttpDateTimeFormatter.formatDateTime(now)).
+				build(), 
 				ListPartsResult.class)).thenReturn(expected);
 		
 		ListPartsResult actual = client.listParts(bucket, key, uploadId, new ListPartsCriteria().

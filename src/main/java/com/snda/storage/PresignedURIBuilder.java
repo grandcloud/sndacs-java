@@ -8,7 +8,9 @@ import static com.snda.storage.core.SNDAParameters.RESPONSE_CONTENT_TYPE;
 import static com.snda.storage.core.SNDAParameters.RESPONSE_EXPIRES;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.joda.time.DateTime;
 
 import com.snda.storage.authorization.Canonicalization;
@@ -48,23 +50,27 @@ public class PresignedURIBuilder {
 		checkRequired(key, "key");
 		checkRequired(expires, "expires");
 		Credential credential = checkRequired(storageService.getCredential(), "credential");
-		Request request = new Request().
-			withMethod(method).
-			withEndpoint(getLocation(bucket).getPublicEndpoint()).
-			withBucket(bucket).
-			withKey(key).
-			withParameter(RESPONSE_CONTENT_TYPE, responseOverride.getContentType()).
-			withParameter(RESPONSE_CONTENT_LANGUAGE, responseOverride.getContentLanguage()).
-			withParameter(RESPONSE_EXPIRES, responseOverride.getExpires()).
-			withParameter(RESPONSE_CACHE_CONTROL, responseOverride.getCacheControl()).
-			withParameter(RESPONSE_CONTENT_DISPOSITION, responseOverride.getContentDisposition()).
-			withParameter(RESPONSE_CONTENT_ENCODING, responseOverride.getContentEncoding()).
-			withParameter(EXPIRES, expires.getMillis() / 1000);
+		Request request = Request.builder().
+			method(method).
+			endpoint(getLocation(bucket).getPublicEndpoint()).
+			bucket(bucket).
+			key(key).
+			parameter(RESPONSE_CONTENT_TYPE, responseOverride.getContentType()).
+			parameter(RESPONSE_CONTENT_LANGUAGE, responseOverride.getContentLanguage()).
+			parameter(RESPONSE_EXPIRES, responseOverride.getExpires()).
+			parameter(RESPONSE_CACHE_CONTROL, responseOverride.getCacheControl()).
+			parameter(RESPONSE_CONTENT_DISPOSITION, responseOverride.getContentDisposition()).
+			parameter(RESPONSE_CONTENT_ENCODING, responseOverride.getContentEncoding()).
+			parameter(EXPIRES, expires.getMillis() / 1000).
+			build();
 		String sigature = sign(request, credential);
-		return request.
-			withParameter(SNDA_ACCESS_KEY_ID, credential.getAccessKeyId()).
-			withParameter(SIGNATURE, sigature).
-			buildURI();
+		try {
+			return new URIBuilder(request.getURI()).
+				addParameter(SNDA_ACCESS_KEY_ID, credential.getAccessKeyId()).
+				addParameter(SIGNATURE, sigature).build();
+		} catch (URISyntaxException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 	
 	private static <T> T checkRequired(T object, String name) {

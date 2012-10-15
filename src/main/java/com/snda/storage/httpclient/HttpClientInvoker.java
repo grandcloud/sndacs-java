@@ -95,7 +95,7 @@ public class HttpClientInvoker implements HttpInvoker {
 	}
 
 	private HttpUriRequest createHTTPRequest(Request request) {
-		HttpUriRequest httpRequest = HttpRequestCreator.create(request.getMethod(), request.buildURI());
+		HttpUriRequest httpRequest = HttpRequestCreator.create(request.getMethod(), request.getURI());
 		setHeaders(httpRequest, request.getHeaders());
 		if (request.getCredential() != null) {
 			httpRequest.addHeader(HttpHeaders.AUTHORIZATION, sign(request.getCredential(), new CanonicalizableRequestAdapter(request)).toString());

@@ -47,10 +47,11 @@ public class BucketOperationTest {
 	@Test
 	public void testListBuckets() {
 		ListAllMyBucketsResult expected = mock(ListAllMyBucketsResult.class);
-		when(invoker.invoke(new Request().
-				withMethod(Method.GET).
-				withEndpoint(endpoint).
-				withHeader("Date", formatDateTime(now)), 
+		when(invoker.invoke(Request.builder().
+				method(Method.GET).
+				endpoint(endpoint).
+				header("Date", formatDateTime(now)).
+				build(), 
 				ListAllMyBucketsResult.class)).
 				thenReturn(expected);
 		ListAllMyBucketsResult actual = client.listBuckets();
@@ -61,12 +62,13 @@ public class BucketOperationTest {
 	public void testCreateBucketWithPeferedLocation() {
 		client.createBucket(bucket);
 		
-		verify(invoker).invoke(new Request().
-				withMethod(Method.PUT).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withHeader("Date", formatDateTime(now)).
-				withEntity(new CreateBucketConfiguration(Location.HUABEI_1)), 
+		verify(invoker).invoke(Request.builder().
+				method(Method.PUT).
+				endpoint(endpoint).
+				bucket(bucket).
+				header("Date", formatDateTime(now)).
+				entity(new CreateBucketConfiguration(Location.HUABEI_1)).
+				build(), 
 				Void.class);
 	}
 	
@@ -75,23 +77,25 @@ public class BucketOperationTest {
 		CreateBucketConfiguration configuration = new CreateBucketConfiguration(Location.HUADONG_1);
 		client.createBucket(bucket, configuration);
 		
-		verify(invoker).invoke(new Request().
-				withMethod(Method.PUT).
-				withEndpoint("storage-huadong-1.grandcloud.cn").
-				withBucket(bucket).
-				withHeader("Date", formatDateTime(now)).
-				withEntity(configuration), 
+		verify(invoker).invoke(Request.builder().
+				method(Method.PUT).
+				endpoint("storage-huadong-1.grandcloud.cn").
+				bucket(bucket).
+				header("Date", formatDateTime(now)).
+				entity(configuration).
+				build(), 
 				Void.class);
 	}
 	
 	@Test
 	public void testListObjects() {
 		ListBucketResult expected = mock(ListBucketResult.class);
-		when(invoker.invoke(new Request().
-				withMethod(Method.GET).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withHeader("Date", formatDateTime(now)), 
+		when(invoker.invoke(Request.builder().
+				method(Method.GET).
+				endpoint(endpoint).
+				bucket(bucket).
+				header("Date", formatDateTime(now)).
+				build(), 
 				ListBucketResult.class)).thenReturn(expected);
 		
 		ListBucketResult actual = client.listObjects(bucket);
@@ -101,15 +105,16 @@ public class BucketOperationTest {
 	@Test
 	public void testListObjectsWithCriteria() {
 		ListBucketResult expected = mock(ListBucketResult.class);
-		when(invoker.invoke(new Request().
-				withMethod(Method.GET).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withParameter("delimiter", "/").
-				withParameter("marker", "m").
-				withParameter("max-keys", 500).
-				withParameter("prefix", "p").
-				withHeader("Date", formatDateTime(now)), 
+		when(invoker.invoke(Request.builder().
+				method(Method.GET).
+				endpoint(endpoint).
+				bucket(bucket).
+				parameter("delimiter", "/").
+				parameter("marker", "m").
+				parameter("max-keys", 500).
+				parameter("prefix", "p").
+				header("Date", formatDateTime(now)).
+				build(), 
 				ListBucketResult.class)).thenReturn(expected);
 		
 		ListBucketResult actual = client.listObjects(bucket, new ListBucketCriteria().
@@ -123,15 +128,16 @@ public class BucketOperationTest {
 	@Test
 	public void testListMultipartUploads() {
 		ListMultipartUploadsResult expected = mock(ListMultipartUploadsResult.class);
-		when(invoker.invoke(new Request().
-				withMethod(Method.GET).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withSubResource("uploads").
-				withParameter("delimiter", "/").
-				withParameter("key-marker", "kkk").
-				withParameter("upload-id-marker", "1234567890").
-				withHeader("Date", formatDateTime(now)), 
+		when(invoker.invoke(Request.builder().
+				method(Method.GET).
+				endpoint(endpoint).
+				bucket(bucket).
+				subResource("uploads").
+				parameter("delimiter", "/").
+				parameter("key-marker", "kkk").
+				parameter("upload-id-marker", "1234567890").
+				header("Date", formatDateTime(now)).
+				build(), 
 				ListMultipartUploadsResult.class)).thenReturn(expected);
 		
 		ListMultipartUploadsResult actual = client.listMultipartUploads(bucket, 
@@ -152,11 +158,12 @@ public class BucketOperationTest {
 		SNDAServiceException expectedException = mock(SNDAServiceException.class);
 		when(expectedException.getStatus()).thenReturn(404);
 		
-		when(invoker.invoke(new Request().
-				withMethod(Method.HEAD).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withHeader("Date", formatDateTime(now)), 
+		when(invoker.invoke(Request.builder().
+				method(Method.HEAD).
+				endpoint(endpoint).
+				bucket(bucket).
+				header("Date", formatDateTime(now)).
+				build(), 
 				Void.class)).thenThrow(expectedException);
 		
 		assertFalse(client.doesBucketExist(bucket));
@@ -172,12 +179,13 @@ public class BucketOperationTest {
 			}
 		};
 		
-		when(invoker.invoke(new Request().
-				withMethod(Method.GET).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withSubResource("location").
-				withHeader("Date", formatDateTime(now)), 
+		when(invoker.invoke(Request.builder().
+				method(Method.GET).
+				endpoint(endpoint).
+				bucket(bucket).
+				subResource("location").
+				header("Date", formatDateTime(now)).
+				build(), 
 				LocationConstraint.class)).thenReturn(new LocationConstraint());
 		Location expected = Location.DEFAULT;
 		assertSame(expected, client.getBucketLocation(bucket));
@@ -193,13 +201,14 @@ public class BucketOperationTest {
 		Policy policy = mock(Policy.class);
 		client.setBucketPolicy(bucket, policy);
 		
-		verify(invoker).invoke(new Request().
-				withMethod(Method.PUT).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withSubResource("policy").
-				withHeader("Date", formatDateTime(now)).
-				withEntity(policy), 
+		verify(invoker).invoke(Request.builder().
+				method(Method.PUT).
+				endpoint(endpoint).
+				bucket(bucket).
+				subResource("policy").
+				header("Date", formatDateTime(now)).
+				entity(policy).
+				build(), 
 				Void.class);
 	}
 	
@@ -207,12 +216,13 @@ public class BucketOperationTest {
 	public void testGetBucketPolicy() {
 		Policy expected = mock(Policy.class);
 		
-		when(invoker.invoke(new Request().
-				withMethod(Method.GET).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withSubResource("policy").
-				withHeader("Date", formatDateTime(now)),
+		when(invoker.invoke(Request.builder().
+				method(Method.GET).
+				endpoint(endpoint).
+				bucket(bucket).
+				subResource("policy").
+				header("Date", formatDateTime(now)).
+				build(),
 				Policy.class)).thenReturn(expected);
 		
 		Policy actual = client.getBucketPolicy(bucket);
@@ -223,12 +233,13 @@ public class BucketOperationTest {
 	public void testDeleteBucketPolicy() {
 		client.deleteBucketPolicy(bucket);
 		
-		verify(invoker).invoke(new Request().
-				withMethod(Method.DELETE).
-				withEndpoint(endpoint).
-				withBucket(bucket).
-				withSubResource("policy").
-				withHeader("Date", formatDateTime(now)), 
+		verify(invoker).invoke(Request.builder().
+				method(Method.DELETE).
+				endpoint(endpoint).
+				bucket(bucket).
+				subResource("policy").
+				header("Date", formatDateTime(now)).
+				build(), 
 				Void.class);
 	}
 	
