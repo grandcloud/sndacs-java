@@ -110,9 +110,9 @@ public class BucketOperationTest {
 				endpoint(endpoint).
 				bucket(bucket).
 				parameter("delimiter", "/").
+				parameter("prefix", "p").
 				parameter("marker", "m").
 				parameter("max-keys", 500).
-				parameter("prefix", "p").
 				header("Date", formatDateTime(now)).
 				build(), 
 				ListBucketResult.class)).thenReturn(expected);

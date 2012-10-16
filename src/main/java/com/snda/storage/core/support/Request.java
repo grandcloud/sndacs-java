@@ -99,8 +99,8 @@ public class Request extends ValueObject {
 		private String bucket;
 		private String key;
 		private Credential credential;
-		private Map<String, Object> parameters = Maps.newHashMap();
-		private Map<String, Object> headers = Maps.newHashMap();
+		private Map<String, Object> parameters = Maps.newLinkedHashMap();
+		private Map<String, Object> headers = Maps.newLinkedHashMap();
 		
 		private Builder() {
 		}
