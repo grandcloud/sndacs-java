@@ -4,12 +4,12 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.http.client.utils.URIBuilder;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.snda.storage.core.Credential;
 import com.snda.storage.core.ValueObject;
@@ -39,8 +39,8 @@ public class Request extends ValueObject {
 		this.method = builder.method;
 		this.credential = builder.credential;
 		this.entity = builder.entity;
-		this.parameters = ImmutableMap.copyOf(builder.parameters);
-		this.headers = ImmutableMap.copyOf(builder.headers);
+		this.parameters = Collections.unmodifiableMap(builder.parameters);
+		this.headers =  Collections.unmodifiableMap(builder.headers);
 	}
 	
 	private static URI buildURI(Builder builder) {
@@ -51,9 +51,6 @@ public class Request extends ValueObject {
 		String path = new ObjectPathBuilder().bucket(builder.bucket).key(builder.key).build();
 		if (isNotBlank(path)) {
 			uriBuilder.setPath("/" + path.toString());
-		}
-		if (builder.subResource != null) {
-			uriBuilder.addParameter(builder.subResource, null);
 		}
 		for (Entry<String, Object> each : builder.parameters.entrySet()) {
 			uriBuilder.addParameter(each.getKey(), toString(each.getValue()));
@@ -102,7 +99,6 @@ public class Request extends ValueObject {
 		private String bucket;
 		private String key;
 		private Credential credential;
-		private String subResource;
 		private Map<String, Object> parameters = Maps.newHashMap();
 		private Map<String, Object> headers = Maps.newHashMap();
 		
@@ -139,7 +135,7 @@ public class Request extends ValueObject {
 		}
 
 		public Builder subResource(String subResource) {
-			this.subResource = subResource;
+			this.parameters.put(subResource, null);
 			return this;
 		}
 		
