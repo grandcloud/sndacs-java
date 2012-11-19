@@ -4,7 +4,6 @@ import java.io.File;
 
 import com.snda.storage.Entity;
 import com.snda.storage.core.support.FileEntity;
-import com.snda.storage.service.utils.Mimetypes;
 
 /**
  * 

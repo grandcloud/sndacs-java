@@ -125,11 +125,6 @@
 			<version>${logback.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.jamesmurty.utils</groupId>
-			<artifactId>java-xmlbuilder</artifactId>
-			<version>0.4</version>
-		</dependency>
 
 	</dependencies>
 
