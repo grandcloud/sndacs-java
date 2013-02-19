@@ -133,7 +133,6 @@ storage.bucket("mybucket").object("data/upload/pic.jpg").entity(new File("d:\\us
 自定义Metadata
 ```java
 storage.bucket("mybucket").object("data/upload/mydata").
-	reducedRedundancy().
 	contentType("application/octet-stream").	
 	contentMD5("ABCDEFGUVWXYZ").
 	contentLanguage("en").
@@ -178,7 +177,6 @@ SNDAObjectMetadata metadata = storage.bucket("mybucket").object("music/norther.m
 更新Object信息与Metadata
 ```java
 storage.bucket("mybucket").object("music/norther.mp3").
-	reducedRedundancy().
 	contentType("audio/mpeg").
 	metadata("x-snda-meta-nation", "Finland").
 	update();

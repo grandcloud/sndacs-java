@@ -61,7 +61,7 @@ public class UploadObjectRequest extends ValueObject {
 	}
 
 	private String getContentType(File file) {
-		return Mimetypes.getInstance().getMimetype(file);
+		return MIMETypes.getInstance().getMimetype(file);
 	}
 
 	private String getContentDisposition(File file) {
