@@ -18,7 +18,7 @@ import com.google.common.io.InputSupplier;
 
 /**
  * 
- * @author wangzijian
+ * @author wangzijian@snda.com
  *
  */
 public class MIMETypes {

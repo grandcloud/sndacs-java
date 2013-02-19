@@ -3,7 +3,11 @@ package com.snda.storage.core;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-
+/**
+ * 
+ * @author wangzijian@snda.com
+ *
+ */
 public class MIMETypesTest {
 
 	@Test
