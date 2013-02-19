@@ -4,7 +4,6 @@ import java.io.File;
 
 import com.snda.storage.Entity;
 import com.snda.storage.core.support.FileEntity;
-import com.snda.storage.service.utils.Mimetypes;
 
 /**
  * 
@@ -62,7 +61,7 @@ public class UploadObjectRequest extends ValueObject {
 	}
 
 	private String getContentType(File file) {
-		return Mimetypes.getInstance().getMimetype(file);
+		return MIMETypes.getInstance().getMimetype(file);
 	}
 
 	private String getContentDisposition(File file) {
