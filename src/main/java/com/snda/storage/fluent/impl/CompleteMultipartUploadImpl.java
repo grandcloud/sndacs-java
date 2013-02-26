@@ -34,13 +34,13 @@ class CompleteMultipartUploadImpl implements CompleteMultipartUpload {
 
 	@Override
 	public CompleteMultipartUpload part(Part part) {
-		parts.add(part);
+		this.parts.add(part);
 		return this;
 	}
 
 	@Override
 	public CompleteMultipartUpload parts(List<Part> parts) {
-		parts.addAll(parts);
+		this.parts.addAll(parts);
 		return this;
 	}
 
