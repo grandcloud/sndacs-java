@@ -29,8 +29,8 @@ import org.slf4j.LoggerFactory;
  * @author snda
  *
  */
-public class Mimetypes {
-	private static final Logger log = LoggerFactory.getLogger(Mimetypes.class);
+public class FileTypes {
+	private static final Logger log = LoggerFactory.getLogger(FileTypes.class);
 	
 	/**
      * The default XML mimetype: application/xml
@@ -54,23 +54,23 @@ public class Mimetypes {
      */
     public static final String MIMETYPE_GZIP = "application/x-gzip";
     
-    private static Mimetypes mimetypes = null;
+    private static FileTypes mimetypes = null;
     /**
      * Map that stores file extensions as keys, and the corresponding mimetype as values.
      */
     private final Map<String, String> extensionToMimetypeMap = new HashMap<String, String>();
     
-    private Mimetypes() {
+    private FileTypes() {
     }
     
     /**
      * Loads mime type settings from the file 'mime.types' in the classpath, if it's available.
      */
-	public static synchronized Mimetypes getInstance() {
+	public static synchronized FileTypes getInstance() {
 		if (mimetypes != null) {
 			return mimetypes;
 		}
-		mimetypes = new Mimetypes();
+		mimetypes = new FileTypes();
 		InputStream mimetypesFile = mimetypes.getClass().getResourceAsStream(
 				"/mime.types");
 		if (mimetypesFile != null) {
