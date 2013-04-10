@@ -235,7 +235,7 @@ SDK中提供了PresigendURIBuilder来构造预签名URI。
 ```java
 URI uri = storage.presignedURIBuilder().
 	bucket("mybucket").
-	object("hello_world.mp4").
+	key("hello_world.mp4").
 	expires(new DateTime().plusMinutes(5))
 	build();
 
