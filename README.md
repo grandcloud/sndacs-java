@@ -237,7 +237,7 @@ URI uri = storage.presignedURIBuilder().
 	bucket("mybucket").
 	object("hello_world.mp4").
 	expires(new DateTime().plusMinutes(5))
-	builder();
+	build();
 
 ```
 生成的URI如下：
