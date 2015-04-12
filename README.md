@@ -19,8 +19,8 @@
 ## 下载
 目前最新的版本是2012年09月24日发布的2.0.0：
 
-1. [snda-cloud-storage-java-sdk-2.0.0-SNAPSHOT.jar](https://github.com/downloads/grandcloud/sndacs-java/snda-cloud-storage-java-sdk-2.0.0.jar)	二进制发布包
-2. [snda-cloud-storage-java-sdk-2.0.0-SNAPSHOT.zip](https://github.com/downloads/grandcloud/sndacs-java/snda-cloud-storage-java-sdk-2.0.0.zip)	包含源代码，第三方依赖，Javadoc等内容的发布包
+1. [snda-cloud-storage-java-sdk-2.0.0.jar](https://github.com/downloads/grandcloud/sndacs-java/snda-cloud-storage-java-sdk-2.0.0.jar)	二进制发布包
+2. [snda-cloud-storage-java-sdk-2.0.0.zip](https://github.com/downloads/grandcloud/sndacs-java/snda-cloud-storage-java-sdk-2.0.0.zip)	包含源代码，第三方依赖，Javadoc等内容的发布包
 
 ## Maven
 
